@@ -19,47 +19,48 @@ public class Sample {
         System.out.println("[7] AniMap.jp");
         System.out.println("[8] Evesta.jp");
         System.out.println("[9] Jtw.Zaq.Ne.jp/AnimeSong");
+        System.out.println("[A] JoySound.com");
         System.out.println("请输入选项：");
 
-        int choice = new Scanner(System.in).nextInt();
+        char choice = new Scanner(System.in).next().charAt(0);
         FetcherBuilder builder = FetcherBuilder.builder();
 
         switch (choice) {
-            case 0:
+            case '0':
                 printFetcher(builder
                         .site("Uta-Net.com")
                         .page("183656")
                         .userAgent(UserAgent.CHROME)
                         .build());
                 break;
-            case 1:
+            case '1':
                 printFetcher(builder
                         .site("J-Lyric.net")
                         .page("http://j-lyric.net/artist/a057818/l031ba7.html")
                         .userAgent(UserAgent.IE)
                         .build());
                 break;
-            case 2:
+            case '2':
                 printFetcher(builder
                         .site("UtaMap.com")
                         .page("k-150415-182")
                         .userAgent(UserAgent.FIREFOX)
                         .build());
                 break;
-            case 3:
+            case '3':
                 printFetcher(builder
                         .site("Kasi-Time.com")
                         .page("http://www.kasi-time.com/item-73631.html")
                         .userAgent(UserAgent.getUserAgent())
                         .build());
                 break;
-            case 4:
+            case '4':
                 printFetcher(builder
                         .site("KashiNavi.com")
                         .page("83934")
                         .build());
                 break;
-            case 5:
+            case '5':
                 printFetcher(builder
                         .site("KGet.jp")
                         .page("http://www.kget.jp/lyric/171135/" +
@@ -67,29 +68,36 @@ public class Sample {
                                 "Jepsen%2C+Owl+City")
                         .build());
                 break;
-            case 6:
+            case '6':
                 printFetcher(builder
                         .site("UtaTen.com")
                         .page("utaten.com/lyric/Neru,鏡音リン,鏡音レン/ハウトゥー世界征服/")
                         .userAgent(UserAgent.EDGE)
                         .build());
                 break;
-            case 7:
+            case '7':
                 printFetcher(builder
                         .site("AniMap.jp")
                         .page("k-140806-069")
                         .build());
                 break;
-            case 8:
+            case '8':
                 printFetcher(builder
                         .site("Evesta.jp")
                         .page("www.evesta.jp/lyric/artists/a359772/lyrics/l223589.html")
                         .build());
                 break;
-            case 9:
+            case '9':
                 printFetcher(builder
                         .site("Jtw.Zaq.Ne.jp/AnimeSong")
                         .page("http://www.jtw.zaq.ne.jp/animesong/me/konan/munega.html")
+                        .build());
+                break;
+            case 'a':
+            case 'A':
+                printFetcher(builder
+                        .site("JoySound.com")
+                        .page("405267")
                         .build());
         }
     }
