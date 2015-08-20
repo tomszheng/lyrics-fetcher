@@ -1,4 +1,4 @@
-# lyrics-fetcher
+# Lyrics Fetcher
 
 Lyrics Fetcher is a simple tool which provides ability to fetch lyrics on japanese lyrics websites.
 
