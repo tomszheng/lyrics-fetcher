@@ -48,8 +48,10 @@ public class UserAgent {
                 return FIREFOX;
             case 2:
                 return IE;
-            default:
+            case 3:
                 return EDGE;
+            default:
+                throw new AssertionError("Won't happen.");
         }
     }
 }

@@ -5,16 +5,16 @@ import com.kumasuke.fetcher.util.FetcherBuilder;
 import java.io.IOException;
 
 /**
- * ¥¢¥Ë¥á¥½¥ó¥°¤Î¸èÔ~¤Ê¤é¤³¤³¤Ë¤ª¤Ş¤«¤»£¿ (Jtw.Zaq.Ne.jp/AnimeSong) µÄ¸è´Ê»ñÈ¡Æ÷¡£
+ * ã‚¢ãƒ‹ãƒ¡ã‚½ãƒ³ã‚°ã®æ­Œè©ãªã‚‰ã“ã“ã«ãŠã¾ã‹ã›ï¼Ÿ (Jtw.Zaq.Ne.jp/AnimeSong) çš„æ­Œè¯è·å–å™¨ã€‚
  */
 public class AnimeSongFetcher extends AbstractUnitedFetcher<AnimeSongUnitedParser> {
     /**
-     * ¹¹ÔìÒ»¸ö {@code AnimeSongFetcher} ¶ÔÏó£¬ÓÃÓÚ»ñÈ¡¶ÔÓ¦ÍøÕ¾¸è´ÊÏà¹ØĞÅÏ¢¡£<br>
-     * Ò²¿ÉÊ¹ÓÃ {@link FetcherBuilder FetcherBuilder} À´½øĞĞ¹¹Ôì¡£
+     * æ„é€ ä¸€ä¸ª {@code AnimeSongFetcher} å¯¹è±¡ï¼Œç”¨äºè·å–å¯¹åº”ç½‘ç«™æ­Œè¯ç›¸å…³ä¿¡æ¯ã€‚<br>
+     * ä¹Ÿå¯ä½¿ç”¨ {@link FetcherBuilder FetcherBuilder} æ¥è¿›è¡Œæ„é€ ã€‚
      *
-     * @param page      ¸è´ÊÒ³µØÖ·
-     * @param userAgent {@code UserAgent} ×Ö·û´®
-     * @throws IOException Ò³ÃæÁ¬½Ó¡¢´¦ÀíÊ§°Ü
+     * @param page      æ­Œè¯é¡µåœ°å€
+     * @param userAgent {@code UserAgent} å­—ç¬¦ä¸²
+     * @throws IOException é¡µé¢è¿æ¥ã€å¤„ç†å¤±è´¥
      */
     public AnimeSongFetcher(String page, String userAgent) throws IOException {
         super(page, userAgent);

@@ -9,17 +9,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ¥¤¥Ù¥¹¥¿ (Evesta.jp) µÄÍ³ºÏ·ÖÎöÆ÷¡£<br>
- * Ê¹ÓÃ {@code Jsoup} °ü»ñÈ¡Ò³ÃæĞÅÏ¢¡£
+ * ã‚¤ãƒ™ã‚¹ã‚¿ (Evesta.jp) çš„ç»Ÿåˆåˆ†æå™¨ã€‚<br>
+ * ä½¿ç”¨ {@code Jsoup} åŒ…è·å–é¡µé¢ä¿¡æ¯ã€‚
  */
 class EvestaUnitedParser extends UnitedParser {
-    // ÍøÕ¾µÄÖ÷»úÃû
+    // ç½‘ç«™çš„ä¸»æœºå
     private static final String HOSTNAME = "http://www.evesta.jp/";
-    // ÌáÈ¡¸èÇú±êÌâµÄÕıÔò±í´ïÊ½
+    // æå–æ­Œæ›²æ ‡é¢˜çš„æ­£åˆ™è¡¨è¾¾å¼
     private static final Pattern TITLE_PATTERN;
-    // ÌáÈ¡¸èÇú»ù±¾ĞÅÏ¢µÄÕıÔò±í´ïÊ½
+    // æå–æ­Œæ›²åŸºæœ¬ä¿¡æ¯çš„æ­£åˆ™è¡¨è¾¾å¼
     private static final Pattern INFO_PATTERN;
-    // Æ¥Åä¸è´ÊÒ³µØÖ·µÄÕıÔò±í´ïÊ½
+    // åŒ¹é…æ­Œè¯é¡µåœ°å€çš„æ­£åˆ™è¡¨è¾¾å¼
     private static final Pattern FULL_URL_PATTERN;
 
     static {
@@ -38,11 +38,11 @@ class EvestaUnitedParser extends UnitedParser {
     private ListLyrics lyrics;
 
     /**
-     * ¹¹ÔìÒ»¸ö {@code EvestaUnitedParser} ¶ÔÏó£¬ÇÒÖ¸¶¨ {@code UserAgent}¡£
+     * æ„é€ ä¸€ä¸ª {@code EvestaUnitedParser} å¯¹è±¡ï¼Œä¸”æŒ‡å®š {@code UserAgent}ã€‚
      *
-     * @param page      ¸è´ÊÒ³µØÖ·
-     * @param userAgent {@code UserAgent} ×Ö·û´®
-     * @throws IOException Ò³ÃæÁ¬½Ó¡¢´¦ÀíÊ§°Ü
+     * @param page      æ­Œè¯é¡µåœ°å€
+     * @param userAgent {@code UserAgent} å­—ç¬¦ä¸²
+     * @throws IOException é¡µé¢è¿æ¥ã€å¤„ç†å¤±è´¥
      */
     EvestaUnitedParser(String page, String userAgent) throws IOException {
         if (!validate(page))
@@ -70,10 +70,10 @@ class EvestaUnitedParser extends UnitedParser {
     }
 
     /**
-     * »ñÈ¡¸èÇú»ù±¾ĞÅÏ¢¡£<br>
+     * è·å–æ­Œæ›²åŸºæœ¬ä¿¡æ¯ã€‚<br>
      *
-     * @return ×°ÓĞ¸èÇúĞÅÏ¢µÄ {@code Header} ÈİÆ÷
-     * @implSpec ³õ´Îµ÷ÓÃÊ±£¬»á³õÊ¼»¯ĞèÒª·µ»ØµÄ¶ÔÏó£¬Õâ½«ºÄ·ÑÒ»¶¨µÄÊ±¼ä¡£
+     * @return è£…æœ‰æ­Œæ›²ä¿¡æ¯çš„ {@code Header} å®¹å™¨
+     * @implSpec åˆæ¬¡è°ƒç”¨æ—¶ï¼Œä¼šåˆå§‹åŒ–éœ€è¦è¿”å›çš„å¯¹è±¡ï¼Œè¿™å°†è€—è´¹ä¸€å®šçš„æ—¶é—´ã€‚
      */
     @Override
     EnumHeader header() {
@@ -97,10 +97,10 @@ class EvestaUnitedParser extends UnitedParser {
     }
 
     /**
-     * »ñÈ¡¸è´ÊÎÄ±¾¡£<br>
+     * è·å–æ­Œè¯æ–‡æœ¬ã€‚<br>
      *
-     * @return ×°ÓĞ¸è´ÊÎÄ±¾µÄ {@code Lyrics} ÈİÆ÷
-     * @implSpec ³õ´Îµ÷ÓÃÊ±£¬»á³õÊ¼»¯ĞèÒª·µ»ØµÄ¶ÔÏó£¬Õâ½«ºÄ·ÑÒ»¶¨µÄÊ±¼ä¡£
+     * @return è£…æœ‰æ­Œè¯æ–‡æœ¬çš„ {@code Lyrics} å®¹å™¨
+     * @implSpec åˆæ¬¡è°ƒç”¨æ—¶ï¼Œä¼šåˆå§‹åŒ–éœ€è¦è¿”å›çš„å¯¹è±¡ï¼Œè¿™å°†è€—è´¹ä¸€å®šçš„æ—¶é—´ã€‚
      */
     @Override
     ListLyrics lyrics() {
@@ -115,9 +115,9 @@ class EvestaUnitedParser extends UnitedParser {
     }
 
     /**
-     * »ñÈ¡¸è´ÊÒ³µØÖ·¡£
+     * è·å–æ­Œè¯é¡µåœ°å€ã€‚
      *
-     * @return ¸è´ÊÒ³µØÖ·
+     * @return æ­Œè¯é¡µåœ°å€
      */
     @Override
     String songPageUrl() {

@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,12 +117,7 @@ class KashiNaviSongPageParser extends SongPageParser {
      * @return CGI 参数 {@code Map} 对象集
      */
     Map<String, String> lrcCgiParameters() {
-        Map<String, String> parameters = new LinkedHashMap<>();
-
-        parameters.put("kdifoe88", "smx;paa");
-        parameters.put("file_no", songCode);
-
-        return parameters;
+        return toMap(p("kdifoe88", "smx;paa"), p("file_no", songCode));
     }
 
     /**

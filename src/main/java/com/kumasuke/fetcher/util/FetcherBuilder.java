@@ -46,6 +46,7 @@ public class FetcherBuilder {
      *             utaten.com<br>
      *             animap.jp<br>
      *             evesta.jp<br>
+     *             joysound.com<br>
      *             jtw.zaq.ne.jp/animesong
      * @return {@code FetcherBuilder} 对象，便于链式编程
      */
@@ -130,6 +131,9 @@ public class FetcherBuilder {
                 break;
             case "jtw.zaq.ne.jp/animesong":
                 fetcher = new AnimeSongFetcher(page, userAgent);
+                break;
+            case "joysound.com":
+                fetcher = new JoySoundFetcher(page, userAgent);
                 break;
             default:
                 throw new IllegalArgumentException

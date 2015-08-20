@@ -2,6 +2,8 @@ package com.kumasuke.fetcher.ftr;
 
 import org.jsoup.Jsoup;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,15 +14,19 @@ import java.util.stream.Stream;
  * 通用分析器，提供公用常量与方法。
  */
 abstract class Parser {
-    // '&nbsp;' 被 Jsoup 解析成的值，其 Unicode 值为 '\u00a0'
-    static final String JSOUP_NBSP = Jsoup.parse("&nbsp;").text();
     // Flash 播放器版本
     static final String FLASH_VERSION = "ShockwaveFlash/18.0.0.232";
+    // 通用 Http 请求属性 X-Requested-With 键值对
+    static final P X_REQUESTED_WITH_PROPERTY = p("X-Requested-With", FLASH_VERSION);
+
+    // '&nbsp;' 被 Jsoup 解析成的值，其 Unicode 值为 '\u00a0'
+    static final String JSOUP_NBSP = Jsoup.parse("&nbsp;").text();
+
     // 用于去除两端全角空格的正则表达式
     static final Pattern SUPER_TRIM_PATTERN;
 
     static {
-        SUPER_TRIM_PATTERN = Pattern.compile("\\u3000*(.*?)\\u3000*");
+        SUPER_TRIM_PATTERN = Pattern.compile("[\\u3000\\s]*(.*?)[\\u3000\\s]*");
     }
 
     /**
@@ -53,6 +59,28 @@ abstract class Parser {
     }
 
     /**
+     * 生成一组 {@code String} 键值对。
+     *
+     * @param key   {@code key} 值
+     * @param value {@code value} 值
+     * @return 生成的键值对，可作为 {@link Parser#toMap(P...) toMap(E...)} 的参数
+     */
+    static P p(String key, String value) {
+        return new P(key, value);
+    }
+
+    /**
+     * 将一组或多组 {@code String} 键值对转换为一个 {@code Map} 对象。
+     *
+     * @param args 需要转换的 {@code String} 键值对，由 {@link Parser#p(String, String) p(String, String)} 方法生成
+     * @return 装有传入的 {@code String} 键值对的 {@code Map} 对象
+     */
+    static Map<String, String> toMap(P... args) {
+        return Stream.of(args)
+                .collect(Collectors.toMap(P::getKey, P::getValue));
+    }
+
+    /**
      * 将一行或多行歌词装入 {@code ListLyrics} 歌词容器中。
      *
      * @param dest {@code ListLyrics} 歌词容器
@@ -75,9 +103,62 @@ abstract class Parser {
             dest.addLine(matcher.group(1).trim());
     }
 
+    /**
+     * 去除字符串两端多于的所有半角 / 全角空格。
+     *
+     * @param str 需要截取的字符串
+     * @return 截取完成的字符串
+     */
     static String superTrim(String str) {
         Matcher matcher = SUPER_TRIM_PATTERN.matcher(str);
 
-        return matcher.matches() ? matcher.group(1).trim() : str.trim();
+        if (matcher.matches())
+            return matcher.group(1);
+        else
+            throw new AssertionError("The regex always matches.");
+    }
+
+    /**
+     * 临时键值对，外部仅可使用 {@link Parser#p(String, String) p(String, String)} 方法创建。<br>
+     * 无法修改，且无法从外部访问内部值。
+     */
+    static class P {
+        private final String key;
+        private final String value;
+
+        private P(String key, String value) {
+            this.key = Objects.requireNonNull(key, "The 'key' must not be null.");
+            this.value = value;
+        }
+
+        private String getKey() {
+            return key;
+        }
+
+        private String getValue() {
+            return value;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, value);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (!(obj instanceof P))
+                return false;
+
+            P p = (P) obj;
+            return Objects.equals(key, p.key)
+                    && Objects.equals(value, p.value);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s = %s", key, value);
+        }
     }
 }

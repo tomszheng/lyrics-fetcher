@@ -24,9 +24,9 @@ class KashiNaviLyricsParser extends LyricsParser {
                 .timeout(5000)
                 .referer(songPage.lrcUrl())
                 .userAgent(userAgent)
+                .requestProperty(toMap(X_REQUESTED_WITH_PROPERTY))
                 .usePost(true)
-                .xRequestedWith(FLASH_VERSION)
-                .setRequestParameter(songPage.lrcCgiParameters())
+                .requestParameter(songPage.lrcCgiParameters())
                 .get();
     }
 

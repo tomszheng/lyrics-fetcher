@@ -8,15 +8,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ¥¢¥Ë¥á¥½¥ó¥°¤Î¸èÔ~¤Ê¤é¤³¤³¤Ë¤ª¤Ş¤«¤»£¿ (Jtw.Zaq.Ne.jp/AnimeSong) µÄÍ³ºÏ·ÖÎöÆ÷¡£<br>
- * Ê¹ÓÃ {@code Jsoup} °ü»ñÈ¡Ò³ÃæĞÅÏ¢¡£
+ * ã‚¢ãƒ‹ãƒ¡ã‚½ãƒ³ã‚°ã®æ­Œè©ãªã‚‰ã“ã“ã«ãŠã¾ã‹ã›ï¼Ÿ (Jtw.Zaq.Ne.jp/AnimeSong) çš„ç»Ÿåˆåˆ†æå™¨ã€‚<br>
+ * ä½¿ç”¨ {@code Jsoup} åŒ…è·å–é¡µé¢ä¿¡æ¯ã€‚
  */
 class AnimeSongUnitedParser extends UnitedParser {
-    // ÍøÕ¾µÄÖ÷»úÃû
+    // ç½‘ç«™çš„ä¸»æœºå
     private static final String HOSTNAME = "http://www.jtw.zaq.ne.jp/animesong";
-    // ÌáÈ¡¸èÇú»ù±¾ĞÅÏ¢ºÍ¸è´ÊµÄÕıÔò±í´ïÊ½
+    // æå–æ­Œæ›²åŸºæœ¬ä¿¡æ¯å’Œæ­Œè¯çš„æ­£åˆ™è¡¨è¾¾å¼
     private static final Pattern ALL_INFO_PATTERN;
-    // Æ¥Åä¸è´ÊÒ³µØÖ·µÄÕıÔò±í´ïÊ½
+    // åŒ¹é…æ­Œè¯é¡µåœ°å€çš„æ­£åˆ™è¡¨è¾¾å¼
     private static final Pattern FULL_URL_PATTERN;
 
     static {
@@ -37,11 +37,11 @@ class AnimeSongUnitedParser extends UnitedParser {
     private ListLyrics lyrics;
 
     /**
-     * ¹¹ÔìÒ»¸ö {@code AnimeSongUnitedParser} ¶ÔÏó£¬ÇÒÖ¸¶¨ {@code UserAgent}¡£
+     * æ„é€ ä¸€ä¸ª {@code AnimeSongUnitedParser} å¯¹è±¡ï¼Œä¸”æŒ‡å®š {@code UserAgent}ã€‚
      *
-     * @param page      ¸è´ÊÒ³µØÖ·
-     * @param userAgent {@code UserAgent} ×Ö·û´®
-     * @throws IOException Ò³ÃæÁ¬½Ó¡¢´¦ÀíÊ§°Ü
+     * @param page      æ­Œè¯é¡µåœ°å€
+     * @param userAgent {@code UserAgent} å­—ç¬¦ä¸²
+     * @throws IOException é¡µé¢è¿æ¥ã€å¤„ç†å¤±è´¥
      */
     AnimeSongUnitedParser(String page, String userAgent) throws IOException {
         if (!validate(page))
@@ -75,13 +75,12 @@ class AnimeSongUnitedParser extends UnitedParser {
         if (header == null) {
             header = new EnumHeader();
 
-            if (matcher.matches()) {
+            if (matcher.matches())
                 header.setTitle(matcher.group("title").trim())
                         .setLyricist(toSet(matcher.group("lyricist").split("\\u3001")))
                         .setComposer(toSet(matcher.group("composer").split("\\u3001")))
                         .setArranger(toSet(matcher.group("arranger").split("\\u3001")))
                         .setArtist(toSet(matcher.group("artist").split("\\u3001")));
-            }
         }
 
         return header;

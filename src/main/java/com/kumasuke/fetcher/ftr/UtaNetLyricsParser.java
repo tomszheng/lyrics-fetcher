@@ -31,8 +31,8 @@ class UtaNetLyricsParser extends LyricsParser {
         try {
             reader.setFeature(Constants.XERCES_FEATURE_PREFIX
                     + Constants.LOAD_EXTERNAL_DTD_FEATURE, false);
-        } catch (SAXException ex) {
-            ex.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
         }
 
         String url = songPage.lrcUrl();

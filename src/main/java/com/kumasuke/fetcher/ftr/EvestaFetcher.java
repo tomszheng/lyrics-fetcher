@@ -5,16 +5,16 @@ import com.kumasuke.fetcher.util.FetcherBuilder;
 import java.io.IOException;
 
 /**
- * ¥¤¥Ù¥¹¥¿ (Evesta.jp) µÄ¸è´Ê»ñÈ¡Æ÷¡£
+ * ã‚¤ãƒ™ã‚¹ã‚¿ (Evesta.jp) çš„æ­Œè¯è·å–å™¨ã€‚
  */
 public class EvestaFetcher extends AbstractUnitedFetcher<EvestaUnitedParser> {
     /**
-     * ¹¹ÔìÒ»¸ö {@code EvestaFetcher} ¶ÔÏó£¬ÓÃÓÚ»ñÈ¡¶ÔÓ¦ÍøÕ¾¸è´ÊÏà¹ØĞÅÏ¢¡£<br>
-     * Ò²¿ÉÊ¹ÓÃ {@link FetcherBuilder FetcherBuilder} À´½øĞĞ¹¹Ôì¡£
+     * æ„é€ ä¸€ä¸ª {@code EvestaFetcher} å¯¹è±¡ï¼Œç”¨äºè·å–å¯¹åº”ç½‘ç«™æ­Œè¯ç›¸å…³ä¿¡æ¯ã€‚<br>
+     * ä¹Ÿå¯ä½¿ç”¨ {@link FetcherBuilder FetcherBuilder} æ¥è¿›è¡Œæ„é€ ã€‚
      *
-     * @param page      ¸è´ÊÒ³µØÖ·
-     * @param userAgent {@code UserAgent} ×Ö·û´®
-     * @throws IOException Ò³ÃæÁ¬½Ó¡¢´¦ÀíÊ§°Ü
+     * @param page      æ­Œè¯é¡µåœ°å€
+     * @param userAgent {@code UserAgent} å­—ç¬¦ä¸²
+     * @throws IOException é¡µé¢è¿æ¥ã€å¤„ç†å¤±è´¥
      */
     public EvestaFetcher(String page, String userAgent) throws IOException {
         super(page, userAgent);

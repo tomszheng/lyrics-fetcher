@@ -55,9 +55,8 @@ public class URLReader {
      *
      * @param charsetName 字符集名称
      * @return {@code URLReader} 对象，便于链式编程
-     * @throws UnsupportedCharsetException 不被支持的字符集名称
      */
-    public URLReader charset(String charsetName) throws UnsupportedCharsetException {
+    public URLReader charset(String charsetName) {
         if (!Charset.isSupported(charsetName))
             throw new UnsupportedCharsetException("The given charset name is unavailable.");
 
@@ -124,14 +123,14 @@ public class URLReader {
             try {
                 urlConn.setRequestMethod("POST");
             } catch (ProtocolException e) {
-                e.printStackTrace();
+                throw new AssertionError("Won't happen if coded right.");
             }
         } else {
             urlConn.setDoOutput(false);
             try {
                 urlConn.setRequestMethod("GET");
             } catch (ProtocolException e) {
-                e.printStackTrace();
+                throw new AssertionError("Won't happen if coded right.");
             }
         }
 
@@ -139,39 +138,34 @@ public class URLReader {
     }
 
     /**
-     * 添加访问 URL 文档的 Http / Https 请求的表单参数，可重复调用添加多条数据。<br>
-     * 只能够在使用 POST 方式时调用，GET 请求数据请直接添加至
-     * {@link URLReader#connect(String) connect(String)} 的参数中。
-     * <p>
-     * 不会覆盖之前添加的数据，而是继续添加。</p>
-     * <p>
-     * 保证添加的数据按照添加顺序排列。</p>
+     * 设置访问 URL 文档的 Http / Https 请求的属性，之前设置的数据会被覆盖。<br>
      *
-     * @param name  请求数据参数名
-     * @param value 请求数据参数值
+     * @param properties 请求属性 {@code Map} 对象
      * @return {@code URLReader} 对象，便于链式编程
      */
-    public URLReader addRequestParameter(String name, String value) {
-        if (!usePost)
-            throw new IllegalStateException("Required using POST method.");
+    public URLReader requestProperty(Map<String, String> properties) {
+        for (Map.Entry<String, String> e : properties.entrySet()) {
+            String key = e.getKey();
+            String value = e.getValue();
 
-        if (requestParameters == null)
-            requestParameters = new LinkedHashMap<>();
+            if (value == null)
+                throw new IllegalArgumentException(key + " cannot be null.");
 
-        requestParameters.put(name, value);
+            urlConn.setRequestProperty(key, value);
+        }
 
         return this;
     }
 
     /**
-     * 设置访问 URL 文档的 Http / Https 请求的表单参数，之前添加的数据会被覆盖。<br>
+     * 设置访问 URL 文档的 Http / Https 请求的表单参数，之前设置的数据会被覆盖。<br>
      * 只能够在使用 POST 方式时调用，GET 请求数据请直接添加至
      * {@link URLReader#connect(String) connect(String)} 的参数中。
      *
      * @param parameters 请求参数 {@code Map} 对象
      * @return {@code URLReader} 对象，便于链式编程
      */
-    public URLReader setRequestParameter(Map<String, String> parameters) {
+    public URLReader requestParameter(Map<String, String> parameters) {
         if (!usePost)
             throw new IllegalStateException("Required using POST method.");
 
@@ -181,21 +175,6 @@ public class URLReader {
             requestParameters.clear();
 
         requestParameters.putAll(parameters);
-
-        return this;
-    }
-
-    /**
-     * 设置访问 URL 文档的的 Http / Https 请求中的 <code>X-Requested-With</code> 字段。
-     *
-     * @param xRequestedWith <code>X-Requested-With</code> 字符串
-     * @return {@code URLReader} 对象，便于链式编程
-     */
-    public URLReader xRequestedWith(String xRequestedWith) {
-        if (xRequestedWith == null)
-            throw new IllegalArgumentException("X-Requested-With cannot be null.");
-
-        urlConn.setRequestProperty("X-Requested-With", xRequestedWith);
 
         return this;
     }
@@ -215,7 +194,7 @@ public class URLReader {
                     parameters.append("&");
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            throw new AssertionError("Won't happen if coded right.");
         }
 
         String encodedParameters = parameters.toString();

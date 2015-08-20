@@ -25,7 +25,7 @@ class AniMapLyricsParser extends LyricsParser {
                 .timeout(5000)
                 .referer(songPage.flashUrl())
                 .userAgent(userAgent)
-                .xRequestedWith(FLASH_VERSION)
+                .requestProperty(toMap(X_REQUESTED_WITH_PROPERTY))
                 .get();
     }
 
