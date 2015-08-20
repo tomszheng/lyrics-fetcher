@@ -3,7 +3,7 @@
 Lyrics Fetcher is a simple tool which provides ability to fetch lyrics on japanese lyrics websites.
 
 ## Supported Sites
-* [animap.jp](http://animap.jp)
+* [animap.jp](http://www.animap.jp)
 * [evesta.jp](http://evesta.jp)
 * [j-lyric.net](http://j-lyric.net)
 * [joysound.com](https://joysound.com)
