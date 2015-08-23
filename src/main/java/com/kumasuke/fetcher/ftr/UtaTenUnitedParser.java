@@ -104,7 +104,7 @@ class UtaTenUnitedParser extends UnitedParser {
 
     /**
      * 获取歌词文本。<br>
-     * 该结果含有注音。
+     * 该结果不含有注音。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
@@ -124,7 +124,7 @@ class UtaTenUnitedParser extends UnitedParser {
 
     /**
      * 获取歌词文本。<br>
-     * 该结果不含有注音。
+     * 该结果含有注音。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
