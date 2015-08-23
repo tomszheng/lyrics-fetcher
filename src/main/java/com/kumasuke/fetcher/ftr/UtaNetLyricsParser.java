@@ -42,10 +42,9 @@ class UtaNetLyricsParser extends LyricsParser {
     }
 
     /**
-     * 获取歌词文本。<br>
+     * 获取歌词文本。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     ListLyrics lyrics() {

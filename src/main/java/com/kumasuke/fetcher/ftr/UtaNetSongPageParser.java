@@ -72,26 +72,31 @@ class UtaNetSongPageParser extends SongPageParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            Element title = doc.select("h2.prev_pad").first();
-            header.setTitle(title.text().trim());
+            Element titleElement = doc.select("h2.prev_pad").first();
+            String title = titleElement.text().trim();
+            header.setTitle(title);
 
-            Element artists = doc.select("div.kashi_artist").first();
-            String allArtists = artists.text();
+            Element artistsElement = doc.select("div.kashi_artist").first();
+            String allArtists = artistsElement.text();
             Matcher matcher = INFO_PATTERN.matcher(allArtists);
-            if (matcher.matches())
-                header.setArtist(toSet(matcher.group(1).split("\\u30fb")))
-                        .setLyricist(toSet(matcher.group(2).split("\\u30fb")))
-                        .setComposer(toSet(matcher.group(3).split("\\u30fb")));
+            if (matcher.matches()) {
+                String[] artists = matcher.group(1).split("\\u30fb");
+                String[] lyricists = matcher.group(2).split("\\u30fb");
+                String[] composers = matcher.group(3).split("\\u30fb");
+
+                header.setArtist(toSet(artists))
+                        .setLyricist(toSet(lyricists))
+                        .setComposer(toSet(composers));
+            }
         }
 
         return header;

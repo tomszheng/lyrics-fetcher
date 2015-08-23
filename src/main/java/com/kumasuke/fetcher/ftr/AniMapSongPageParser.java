@@ -66,10 +66,9 @@ class AniMapSongPageParser extends SongPageParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
@@ -80,15 +79,16 @@ class AniMapSongPageParser extends SongPageParser {
                     .select("table[width=442]")
                     .first()
                     .select("td[bgcolor=#ffffff]");
-            String ar = titleAndArtists.get(0).text();
-            String lr = titleAndArtists.get(1).text();
-            String ti = titleAndArtists.get(2).text();
-            String co = titleAndArtists.get(3).text();
 
-            header.setArtist(toSet(ar.replace(JSOUP_NBSP, "").split("/")))
-                    .setLyricist(toSet(lr.replace(JSOUP_NBSP, "").split("/")))
-                    .setTitle(ti.replace(JSOUP_NBSP, "").trim())
-                    .setComposer(toSet(co.replace(JSOUP_NBSP, "").split("/")));
+            String[] artists = titleAndArtists.get(0).text().split("/");
+            String[] lyricists = titleAndArtists.get(1).text().split("/");
+            String title = htmlTrim(titleAndArtists.get(2).text());
+            String[] composers = titleAndArtists.get(3).text().split("/");
+
+            header.setArtist(toSet(Parser::htmlTrim, artists))
+                    .setLyricist(toSet(Parser::htmlTrim, lyricists))
+                    .setTitle(title)
+                    .setComposer(toSet(Parser::htmlTrim, composers));
         }
 
         return header;
@@ -114,7 +114,7 @@ class AniMapSongPageParser extends SongPageParser {
     }
 
     /**
-     * 获取 Flash 容器地址，用于 Referer欺骗。
+     * 获取 Flash 容器地址，用于 Referer 欺骗。
      *
      * @return Flash 容器地址
      */

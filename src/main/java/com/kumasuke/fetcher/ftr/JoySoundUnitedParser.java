@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,8 @@ import java.util.regex.Pattern;
 class JoySoundUnitedParser extends UnitedParser {
     // 网站的主机名
     private static final String HOSTNAME = "https://www.joysound.com";
+    // 获取歌曲基本信息和歌词的 Json 地址
+    private static final String ALL_INFO_JSON_URL = "https://mspxy.joysound.com/Common/Lyric";
     // 匹配歌词页地址的正则表达式
     private static final Pattern FULL_URL_PATTERN;
     // 匹配歌曲代码的正则表达式
@@ -49,10 +52,6 @@ class JoySoundUnitedParser extends UnitedParser {
         initialize(userAgent);
     }
 
-    private static String lrcUrl() {
-        return "https://mspxy.joysound.com/Common/Lyric";
-    }
-
     private boolean validate(String page) {
         Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
         Matcher songCode = SONG_CODE_PATTERN.matcher(page);
@@ -68,21 +67,27 @@ class JoySoundUnitedParser extends UnitedParser {
     }
 
     private void initialize(String userAgent) throws IOException, ParseException {
-        String doc = URLReader.connect(lrcUrl())
+        try (Reader reader = URLReader.connect(ALL_INFO_JSON_URL)
                 .timeout(5000)
                 .referer(songPageUrl())
                 .userAgent(userAgent)
                 .requestProperty(toMap(p("X-JSP-APP-NAME", "0000800")))
                 .usePost(true)
                 .requestParameter(lrcJsonParameters())
-                .get();
-        this.json = (JSONObject) new JSONParser().parse(doc);
+                .getReader()) {
+            this.json = (JSONObject) new JSONParser().parse(reader);
+        }
     }
 
     private Map<String, String> lrcJsonParameters() {
         return toMap(p("kind", "naviGroupId"), p("selSongNo", songCode), p("interactionFlg", "0"), p("apiVer", "1.0"));
     }
 
+    /**
+     * 获取歌曲基本信息。
+     *
+     * @return 装有歌曲信息的 {@code Header} 容器
+     */
     @Override
     EnumHeader header() {
         if (header == null) {
@@ -97,14 +102,21 @@ class JoySoundUnitedParser extends UnitedParser {
         return header;
     }
 
+    /**
+     * 获取歌词文本。
+     *
+     * @return 装有歌词文本的 {@code Lyrics} 容器
+     */
     @Override
     ListLyrics lyrics() {
         if (lyrics == null) {
             lyrics = new ListLyrics();
 
-            JSONArray lrcList = (JSONArray) json.get("lyricList");
-            JSONObject lrcBody = (JSONObject) lrcList.get(0);
-            addTo(lyrics, ((String) lrcBody.get("lyric")).split("\\n"));
+            JSONArray lrcArray = (JSONArray) json.get("lyricList");
+            JSONObject lrcObj = (JSONObject) lrcArray.get(0);
+            String lrcAll = (String) lrcObj.get("lyric");
+            String[] lyricsText = lrcAll.split("\\n");
+            addTo(lyrics, lyricsText);
         }
 
         return lyrics;

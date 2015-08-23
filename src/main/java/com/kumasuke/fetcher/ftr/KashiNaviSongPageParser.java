@@ -81,31 +81,34 @@ class KashiNaviSongPageParser extends SongPageParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            Elements titleAndSinger =
-                    doc.select("table[cellpadding=2] table[cellspacing=5]")
-                            .first().select("td");
-            String title = titleAndSinger.get(0).text();
-            String singer = titleAndSinger.get(2).text();
-            header.setTitle(title.trim())
-                    .setArtist(toSet(singer));
+            Elements titleAndArtist = doc.select("table[cellpadding=2] table[cellspacing=5]")
+                    .first().select("td");
+            String title = titleAndArtist.get(0).text().trim();
+            String[] artists = titleAndArtist.get(2).text().split("\\u30fb");
+            header.setTitle(title)
+                    .setArtist(toSet(artists));
 
-            String lyricistAndComposer =
-                    doc.select("table[cellpadding=2] table[cellspacing=0]")
-                            .first().select("td").first().text();
+            String lyricistAndComposer = doc.select("table[cellpadding=2] table[cellspacing=0]")
+                    .first().select("td")
+                    .first().text();
             Matcher matcher = INFO_LC_PATTERN.matcher(lyricistAndComposer);
-            if (matcher.matches())
-                header.setLyricist(toSet(matcher.group(1).split("\\u30fb")))
-                        .setComposer(toSet(matcher.group(2).split("\\u30fb")));
+
+            if (matcher.matches()) {
+                String[] lyricists = matcher.group(1).split("\\u30fb");
+                String[] composers = matcher.group(2).split("\\u30fb");
+
+                header.setLyricist(toSet(lyricists))
+                        .setComposer(toSet(composers));
+            }
         }
 
         return header;

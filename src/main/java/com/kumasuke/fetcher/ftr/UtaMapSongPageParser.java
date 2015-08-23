@@ -67,26 +67,27 @@ class UtaMapSongPageParser extends SongPageParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            Element ti = doc.select("td.kasi1").first();
-            Elements artists = doc.select("td.pad5x10x0x10");
-            String lr = artists.get(1).text();
-            String co = artists.get(3).text();
-            String ar = artists.get(5).text();
+            Element titleElement = doc.select("td.kasi1").first();
+            Elements artistsElement = doc.select("td.pad5x10x0x10");
 
-            header.setTitle(ti.text().trim())
-                    .setLyricist(toSet(lr.replace(JSOUP_NBSP, "").split("/")))
-                    .setComposer(toSet(co.replace(JSOUP_NBSP, "").split("/")))
-                    .setArtist(toSet(ar.replace(JSOUP_NBSP, "").split("/")));
+            String title = titleElement.text().trim();
+            String[] lyricists = artistsElement.get(1).text().split("/");
+            String[] composers = artistsElement.get(3).text().split("/");
+            String[] artists = artistsElement.get(5).text().split("/");
+
+            header.setTitle(title)
+                    .setLyricist(toSet(Parser::htmlTrim, lyricists))
+                    .setComposer(toSet(Parser::htmlTrim, composers))
+                    .setArtist(toSet(Parser::htmlTrim, artists));
         }
 
         return header;

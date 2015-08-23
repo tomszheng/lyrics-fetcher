@@ -68,36 +68,39 @@ class KGetUnitedParser extends UnitedParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            Element title = doc.select("h1[itemprop=name]").first();
-            Elements artists = doc.select("table.lyric-data td");
-            Element artist = artists.get(0);
-            Element lyricist = artists.get(1);
-            Element composer = artists.get(2);
+            Element titleElement = doc.select("h1[itemprop=name]").first();
+            Elements artistsElement = doc.select("table.lyric-data td");
+            Element artistElement = artistsElement.get(0);
+            Element lyricistElement = artistsElement.get(1);
+            Element composerElement = artistsElement.get(2);
 
-            header.setTitle(title.text())
-                    .setArtist(toSet(artist.text().split(", ")))
-                    .setLyricist(toSet(lyricist.text().split(", ")))
-                    .setComposer(toSet(composer.text().split(", ")));
+            String title = titleElement.text().trim();
+            String[] artists = artistElement.text().split(", ");
+            String[] lyricists = lyricistElement.text().split(", ");
+            String[] composers = composerElement.text().split(", ");
+
+            header.setTitle(title)
+                    .setArtist(toSet(artists))
+                    .setLyricist(toSet(lyricists))
+                    .setComposer(toSet(composers));
         }
 
         return header;
     }
 
     /**
-     * 获取歌词文本。<br>
+     * 获取歌词文本。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     ListLyrics lyrics() {

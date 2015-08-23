@@ -70,37 +70,44 @@ class EvestaUnitedParser extends UnitedParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            Element title = doc.select("#titleBand h1").first();
-            Matcher titleMatcher = TITLE_PATTERN.matcher(title.text());
-            if (titleMatcher.matches())
-                header.setTitle(titleMatcher.group(1).trim());
+            Element titleElement = doc.select("#titleBand h1").first();
+            Matcher titleMatcher = TITLE_PATTERN.matcher(titleElement.text());
 
-            Element artists = doc.select("#descriptionBand div.artists").first();
-            Matcher matcher = INFO_PATTERN.matcher(artists.text());
-            if (matcher.matches())
-                header.setArtist(toSet(true, matcher.group(1).split("/")))
-                        .setLyricist(toSet(true, matcher.group(2).split("/")))
-                        .setComposer(toSet(true, matcher.group(3).split("/")));
+            if (titleMatcher.matches()) {
+                String title = titleMatcher.group(1).trim();
+                header.setTitle(title);
+            }
+
+            Element artistsElement = doc.select("#descriptionBand div.artists").first();
+            Matcher matcher = INFO_PATTERN.matcher(artistsElement.text());
+
+            if (matcher.matches()) {
+                String[] artists = matcher.group(1).split("/");
+                String[] lyricists = matcher.group(2).split("/");
+                String[] composers = matcher.group(3).split("/");
+
+                header.setArtist(toSet(Parser::superTrim, artists))
+                        .setLyricist(toSet(Parser::superTrim, lyricists))
+                        .setComposer(toSet(Parser::superTrim, composers));
+            }
         }
 
         return header;
     }
 
     /**
-     * 获取歌词文本。<br>
+     * 获取歌词文本。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     ListLyrics lyrics() {
@@ -108,7 +115,8 @@ class EvestaUnitedParser extends UnitedParser {
             lyrics = new ListLyrics();
 
             Element lrcBody = doc.select("#lyricview div.body p").first();
-            addTo(lyrics, lrcBody.html().split("<br(?: /)?>"));
+            String[] lyricsText = lrcBody.html().split("<br(?: /)?>");
+            addTo(lyrics, lyricsText);
         }
 
         return lyrics;

@@ -154,7 +154,6 @@ class EnumHeader implements Header {
      * {@code UnsupportedOperationException} 异常。</p>
      *
      * @return {@code Iterator} 对象
-     * @implSpec 初次调用时，会创建一个 {@code Set} 对象并返回
      * {@code Set.iterator()}，这将耗费一定的时间。
      */
     @Override
@@ -219,6 +218,9 @@ class EnumHeader implements Header {
 
         /**
          * 构造一个 {@code StringItem} 对象。
+         *
+         * @param name  条目名称
+         * @param value 条目值
          */
         private ObjectItem(String name, Object value) {
             this.name = Objects.requireNonNull(name, "The name value should not be null.");

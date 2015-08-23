@@ -4,8 +4,9 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * URL 读取器，用于获取指定 URL 文档内所有文本内容<br>
@@ -13,10 +14,11 @@ import java.util.Map;
  */
 public class URLReader {
     private final HttpURLConnection urlConn;
-    private boolean usePost = false;
-    private Map<String, String> requestParameters;
-    private String charsetName;
 
+    private String encodedRequestParameter;
+    private String charsetName = "UTF-8";
+
+    private boolean usePost = false;
     private boolean hasGot = false;
 
     /**
@@ -30,11 +32,8 @@ public class URLReader {
         if (!url.matches("https?://.*"))
             throw new MalformedURLException("Unsupported protocol or malformed url.");
 
-        URL docUrl = new URL(url);
-
-        urlConn = (HttpURLConnection) docUrl.openConnection();
-        urlConn.setConnectTimeout(3000);                        // 默认等待延迟
-        charsetName = "UTF-8";                                  // 默认字符集
+        urlConn = (HttpURLConnection) new URL(url).openConnection();
+        urlConn.setConnectTimeout(3000);                                // 设置默认等待延迟
     }
 
     /**
@@ -49,6 +48,14 @@ public class URLReader {
         return new URLReader(url);
     }
 
+    private static String encodeAndFormatEntry(Map.Entry<String, String> entry) {
+        try {
+            return String.format("%s=%s", entry.getKey(), URLEncoder.encode(entry.getValue(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("Won't happen if coded right.");
+        }
+    }
+
     /**
      * 设置 URL 文档的字符集。<br>
      * 如若未设置，则默认为 <code>UTF-8</code>。
@@ -58,7 +65,7 @@ public class URLReader {
      */
     public URLReader charset(String charsetName) {
         if (!Charset.isSupported(charsetName))
-            throw new UnsupportedCharsetException("The given charset name is unavailable.");
+            throw new UnsupportedCharsetException("The given charset is unsupported.");
 
         this.charsetName = charsetName;
 
@@ -69,7 +76,7 @@ public class URLReader {
      * 设置访问 URL 文档的等待延迟。<br>
      * 如若未设置，则默认为 3000 {@code ms}。
      *
-     * @param timeout 延迟值（单位：{@code ms}）
+     * @param timeout 延迟值（单位：{@code ms}），设置 0 代表不限制
      * @return {@code URLReader} 对象，便于链式编程
      */
     public URLReader timeout(int timeout) {
@@ -85,10 +92,7 @@ public class URLReader {
      * @return {@code URLReader} 对象，便于链式编程
      */
     public URLReader userAgent(String userAgent) {
-        if (userAgent == null)
-            throw new IllegalArgumentException("User-Agent cannot be null.");
-
-        urlConn.setRequestProperty("User-Agent", userAgent);
+        urlConn.setRequestProperty("User-Agent", Objects.requireNonNull(userAgent, "User-Agent cannot be null."));
 
         return this;
     }
@@ -100,10 +104,7 @@ public class URLReader {
      * @return {@code URLReader} 对象，便于链式编程
      */
     public URLReader referer(String referer) {
-        if (referer == null)
-            throw new IllegalArgumentException("Referer cannot be null.");
-
-        urlConn.setRequestProperty("Referer", referer);
+        urlConn.setRequestProperty("Referer", Objects.requireNonNull(referer, "Referer cannot be null."));
 
         return this;
     }
@@ -144,15 +145,7 @@ public class URLReader {
      * @return {@code URLReader} 对象，便于链式编程
      */
     public URLReader requestProperty(Map<String, String> properties) {
-        for (Map.Entry<String, String> e : properties.entrySet()) {
-            String key = e.getKey();
-            String value = e.getValue();
-
-            if (value == null)
-                throw new IllegalArgumentException(key + " cannot be null.");
-
-            urlConn.setRequestProperty(key, value);
-        }
+        properties.forEach((k, v) -> urlConn.setRequestProperty(k, Objects.requireNonNull(v, k + " cannot be null.")));
 
         return this;
     }
@@ -169,70 +162,73 @@ public class URLReader {
         if (!usePost)
             throw new IllegalStateException("Required using POST method.");
 
-        if (requestParameters == null)
-            requestParameters = new LinkedHashMap<>();
-        else
-            requestParameters.clear();
-
-        requestParameters.putAll(parameters);
+        // 将表单参数编码连接成 URL 形式
+        encodedRequestParameter = parameters.entrySet()
+                .stream()
+                .map(URLReader::encodeAndFormatEntry)
+                .collect(Collectors.joining("&"));
 
         return this;
     }
 
-    private void commitData() throws IOException {
-        StringBuilder parameters = new StringBuilder();
+    private void checkHasGot() {
+        if (hasGot)
+            throw new IllegalStateException("You have invoked the get method once.");
+    }
 
-        try {
-            // 将表单参数编码连接成 URL 形式
-            int i = 0;
-            for (Map.Entry<String, String> e : requestParameters.entrySet()) {
-                parameters.append(e.getKey())
-                        .append("=")
-                        .append(URLEncoder.encode(e.getValue(), "UTF-8"));
+    private Reader prepareReader() throws IOException {
+        // 如果使用 POST 方式且存在表单数据
+        if (usePost && encodedRequestParameter != null && !encodedRequestParameter.isEmpty()) {
+            // 设置 POST 请求相关属性字段
+            urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            urlConn.setRequestProperty("Content-Length", String.valueOf(encodedRequestParameter.length()));
 
-                if (++i != requestParameters.size())
-                    parameters.append("&");
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("Won't happen if coded right.");
+            // 提交表单数据
+            OutputStream os = urlConn.getOutputStream();
+            os.write(encodedRequestParameter.getBytes());
         }
 
-        String encodedParameters = parameters.toString();
-
-        urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        urlConn.setRequestProperty("Content-Length", String.valueOf(encodedParameters.length()));
-
-        // 提交表单数据
-        OutputStream os = urlConn.getOutputStream();
-        os.write(encodedParameters.getBytes());
+        // 使用指定 Charset 读取输入流并返回
+        InputStreamReader isr = new InputStreamReader(urlConn.getInputStream(), charsetName);
+        return new BufferedReader(isr);
     }
 
     /**
      * 读取 URL 文档内的内容至 {@code String} 对象中。<br>
-     * 参数设置完成后，该方法仅可调用一次。
+     * 参数设置完成后，该类方法仅可调用一次。
      *
      * @return 文档内容字符串
      * @throws IOException 读取文档失败
      */
-    public String get() throws IOException {
-        if (hasGot)
-            throw new IllegalStateException("You have invoked the get method once.");
+    public String getText() throws IOException {
+        checkHasGot();
 
-        if (usePost && requestParameters != null && !requestParameters.isEmpty())
-            commitData();
-
-        InputStreamReader isr = new InputStreamReader(urlConn.getInputStream(), charsetName);
-        Reader in = new BufferedReader(isr);
         StringBuilder doc = new StringBuilder();
-
-        int ch;
-        while ((ch = in.read()) != -1)
-            doc.append((char) ch);
-
-        in.close();
-
+        try (Reader in = prepareReader()) {
+            int ch;
+            while ((ch = in.read()) != -1)
+                doc.append((char) ch);
+        }
         hasGot = true;
 
         return doc.toString();
+    }
+
+    /**
+     * 获取用于读取 URL 文档的 {@code Reader} 对象，便于后续处理。<br>
+     * 使用完毕后需将 {@code Reader} 对象关闭。<br>
+     * 参数设置完成后，该类方法仅可调用一次。
+     *
+     * @return {@code Reader} 对象
+     * @throws IOException 读取文档失败
+     */
+    public Reader getReader() throws IOException {
+        checkHasGot();
+
+        // 可能抛出异常，先获取 Reader 以保证 hasGot 的值的正确
+        Reader in = prepareReader();
+        hasGot = true;
+
+        return in;
     }
 }

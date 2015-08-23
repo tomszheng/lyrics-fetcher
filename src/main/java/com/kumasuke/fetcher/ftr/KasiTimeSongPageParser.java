@@ -70,10 +70,9 @@ class KasiTimeSongPageParser extends SongPageParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
@@ -84,19 +83,20 @@ class KasiTimeSongPageParser extends SongPageParser {
                     ("div.person_list_and_other_contents > h1").first();
             header.setTitle(title.text().trim());
 
-            Elements artists = doc.select("div.person_list th + td");
-            List<Set<String>> artist = artists.stream()
-                    .map(e -> e.select("a")     // 处理多位艺术家的情况
+            Elements artistsElement = doc.select("div.person_list th + td");
+            // 处理多位艺术家的情况
+            List<Set<String>> allArtists = artistsElement.stream()
+                    .map(e -> e.select("a")
                             .stream()
                             .map(Element::text)
                             .map(String::trim)
                             .collect(Collectors.toSet()))
                     .collect(Collectors.toList());
 
-            header.setArtist(artist.get(0))
-                    .setLyricist(artist.get(1))
-                    .setComposer(artist.get(2))
-                    .setArranger(artist.get(3));
+            header.setArtist(allArtists.get(0))
+                    .setLyricist(allArtists.get(1))
+                    .setComposer(allArtists.get(2))
+                    .setArranger(allArtists.get(3));
         }
 
         return header;

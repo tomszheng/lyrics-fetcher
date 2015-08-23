@@ -63,7 +63,7 @@ public interface Header extends Iterable<Header.Item> {
      * 在每个 {@code Header.Item} 对象上执行指定操作。<br>
      * 该操作接受 2 个参数，分别对应 {@code Header.Item} 对象的名称和值。
      *
-     * @param action 指定的操作。
+     * @param action 指定的操作
      */
     default void forEach(BiConsumer<String, Object> action) {
         Objects.requireNonNull(action);

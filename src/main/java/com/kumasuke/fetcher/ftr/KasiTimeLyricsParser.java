@@ -24,14 +24,13 @@ class KasiTimeLyricsParser extends LyricsParser {
                 .charset("UTF-8")
                 .timeout(5000)
                 .userAgent(userAgent)
-                .get();
+                .getText();
     }
 
     /**
-     * 获取歌词文本。<br>
+     * 获取歌词文本。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     ListLyrics lyrics() {
@@ -40,7 +39,8 @@ class KasiTimeLyricsParser extends LyricsParser {
 
             int begin = js.indexOf("write('") + 7;
             int end = js.lastIndexOf("');");
-            addTo(lyrics, js.substring(begin, end).split("<br(?: /)?>"));
+            String[] lyricsText = js.substring(begin, end).split("<br(?: /)?>");
+            addTo(lyrics, lyricsText);
         }
 
         return lyrics;

@@ -24,10 +24,10 @@ class UtaTenUnitedParser extends UnitedParser {
     private static final Pattern RUBY_PATTERN;
 
     static {
-        TITLE_PATTERN = Pattern.compile("(.*?)(?=<span).*");
+        TITLE_PATTERN = Pattern.compile("(?:.*?</div>)?(.*?)<span class=\"c.*", Pattern.DOTALL);
         FULL_URL_PATTERN = Pattern.compile(".*?/lyric/([^/]+)/([^/]+)/?");
-        RUBY_PATTERN = Pattern.compile("<span class=\"ruby\"><span class=\"rb\">" +
-                "(.*?)</span><span class=\"rt\">(.*?)</span></span>");
+        RUBY_PATTERN = Pattern.compile("<span class=\"ruby\"><span class=\"rb\">(.*?)</span>" +
+                "<span class=\"rt\">(.*?)</span></span>");
     }
 
     private Document doc;
@@ -35,6 +35,7 @@ class UtaTenUnitedParser extends UnitedParser {
 
     private EnumHeader header;
     private ListLyrics lyrics;
+    private ListLyrics lyricsWithRuby;
 
     /**
      * 构造一个 {@code JLyricSongPageParser} 对象，且指定 {@code UserAgent}。
@@ -69,27 +70,33 @@ class UtaTenUnitedParser extends UnitedParser {
     }
 
     /**
-     * 获取歌曲基本信息。<br>
+     * 获取歌曲基本信息。
      *
      * @return 装有歌曲信息的 {@code Header} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            Element title = doc.select("div.contentBox__title--lyricTitle > h1").first();
-            Matcher titleMatcher = TITLE_PATTERN.matcher(title.html());
-            if (titleMatcher.matches())
-                header.setTitle(titleMatcher.group(1).trim());
+            Element titleElement = doc.select("div.contentBox__title--lyricTitle h1").first();
+            Matcher titleMatcher = TITLE_PATTERN.matcher(titleElement.html());
 
-            Element artist = doc.select("span.contentBox__titleSub").first();
+            if (titleMatcher.matches()) {
+                String title = titleMatcher.group(1).trim();
+                header.setTitle(title);
+            }
+
+            Element artistElement = doc.select("span.contentBox__titleSub").first();
             Elements lyricistAndComposer = doc.select("dd.lyricWork__body");
 
-            header.setArtist(toSet(artist.text().trim().split(",")))
-                    .setLyricist(toSet(lyricistAndComposer.get(0).text().split("/")))
-                    .setComposer(toSet(lyricistAndComposer.get(1).text().split("/")));
+            String[] artists = artistElement.text().trim().split(",");
+            String[] lyricists = lyricistAndComposer.get(0).text().split("/");
+            String[] composers = lyricistAndComposer.get(1).text().split("/");
+
+            header.setArtist(toSet(artists))
+                    .setLyricist(toSet(lyricists))
+                    .setComposer(toSet(composers));
         }
 
         return header;
@@ -97,9 +104,9 @@ class UtaTenUnitedParser extends UnitedParser {
 
     /**
      * 获取歌词文本。<br>
+     * 该结果含有注音。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     ListLyrics lyrics() {
@@ -108,12 +115,30 @@ class UtaTenUnitedParser extends UnitedParser {
 
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
-            String lrcWithRuby = RUBY_PATTERN.matcher(srcLrc)
-                    .replaceAll("$1($2)");
-            addTo(lyrics, lrcWithRuby.split("<br(?: /)?>"));
+            String[] lrcWithoutRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1").split("<br(?: /)?>");
+            addTo(lyrics, lrcWithoutRubyText);
         }
 
         return lyrics;
+    }
+
+    /**
+     * 获取歌词文本。<br>
+     * 该结果不含有注音。
+     *
+     * @return 装有歌词文本的 {@code Lyrics} 容器
+     */
+    ListLyrics lyricsWithRuby() {
+        if (lyricsWithRuby == null) {
+            lyricsWithRuby = new ListLyrics();
+
+            Element lrcBody = doc.select("div.lyricBody div.medium").first();
+            String srcLrc = lrcBody.html().replaceAll("\\n", "");
+            String[] lrcWithRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1($2)").split("<br(?: /)?>");
+            addTo(lyricsWithRuby, lrcWithRubyText);
+        }
+
+        return lyricsWithRuby;
     }
 
     /**

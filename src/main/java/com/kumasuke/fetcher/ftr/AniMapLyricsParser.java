@@ -26,14 +26,13 @@ class AniMapLyricsParser extends LyricsParser {
                 .referer(songPage.flashUrl())
                 .userAgent(userAgent)
                 .requestProperty(toMap(X_REQUESTED_WITH_PROPERTY))
-                .get();
+                .getText();
     }
 
     /**
-     * 获取歌词文本。<br>
+     * 获取歌词文本。
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
-     * @implSpec 初次调用时，会初始化需要返回的对象，这将耗费一定的时间。
      */
     @Override
     ListLyrics lyrics() {
@@ -41,7 +40,8 @@ class AniMapLyricsParser extends LyricsParser {
             lyrics = new ListLyrics();
 
             int begin = doc.indexOf("test2=") + 6;
-            addTo(lyrics, doc.substring(begin).split("\\n"));
+            String[] lyricsText = doc.substring(begin).split("\\n");
+            addTo(lyrics, lyricsText);
         }
 
         return lyrics;

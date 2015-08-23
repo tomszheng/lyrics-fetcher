@@ -70,34 +70,58 @@ class AnimeSongUnitedParser extends UnitedParser {
         matcher = ALL_INFO_PATTERN.matcher(docText);
     }
 
+    /**
+     * 获取歌曲基本信息。
+     *
+     * @return 装有歌曲信息的 {@code Header} 容器
+     */
     @Override
     EnumHeader header() {
         if (header == null) {
             header = new EnumHeader();
 
-            if (matcher.matches())
-                header.setTitle(matcher.group("title").trim())
-                        .setLyricist(toSet(matcher.group("lyricist").split("\\u3001")))
-                        .setComposer(toSet(matcher.group("composer").split("\\u3001")))
-                        .setArranger(toSet(matcher.group("arranger").split("\\u3001")))
-                        .setArtist(toSet(matcher.group("artist").split("\\u3001")));
+            if (matcher.matches()) {
+                String title = matcher.group("title").trim();
+                String[] lyricists = matcher.group("lyricist").split("\\u3001");
+                String[] composers = matcher.group("composer").split("\\u3001");
+                String[] arrangers = matcher.group("arranger").split("\\u3001");
+                String[] artists = matcher.group("artist").split("\\u3001");
+
+                header.setTitle(title)
+                        .setLyricist(toSet(lyricists))
+                        .setComposer(toSet(composers))
+                        .setArranger(toSet(arrangers))
+                        .setArtist(toSet(artists));
+            }
         }
 
         return header;
     }
 
+    /**
+     * 获取歌词文本。
+     *
+     * @return 装有歌词文本的 {@code Lyrics} 容器
+     */
     @Override
     ListLyrics lyrics() {
         if (lyrics == null) {
             lyrics = new ListLyrics();
 
-            if (matcher.matches())
-                addTo(lyrics, matcher.group("lyrics").split("\\n"));
+            if (matcher.matches()) {
+                String[] lyricsText = matcher.group("lyrics").split("\\n");
+                addTo(lyrics, lyricsText);
+            }
         }
 
         return lyrics;
     }
 
+    /**
+     * 获取歌词页地址。
+     *
+     * @return 歌词页地址
+     */
     @Override
     String songPageUrl() {
         return url;
