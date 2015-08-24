@@ -24,7 +24,7 @@ class UtaTenUnitedParser extends UnitedParser {
     private static final Pattern RUBY_PATTERN;
 
     static {
-        TITLE_PATTERN = Pattern.compile("(?:.*?</div>)?(.*?)<span class=\"c.*", Pattern.DOTALL);
+        TITLE_PATTERN = Pattern.compile(".*?\\u300c(.*?)\\u300d.*", Pattern.DOTALL);
         FULL_URL_PATTERN = Pattern.compile(".*?/lyric/([^/]+)/([^/]+)/?");
         RUBY_PATTERN = Pattern.compile("<span class=\"ruby\"><span class=\"rb\">(.*?)</span>" +
                 "<span class=\"rt\">(.*?)</span></span>");
@@ -91,8 +91,8 @@ class UtaTenUnitedParser extends UnitedParser {
             Elements lyricistAndComposer = doc.select("dd.lyricWork__body");
 
             String[] artists = artistElement.text().trim().split(",");
-            String[] lyricists = lyricistAndComposer.get(0).text().split("/");
-            String[] composers = lyricistAndComposer.get(1).text().split("/");
+            String[] lyricists = lyricistAndComposer.get(0).text().split(",");
+            String[] composers = lyricistAndComposer.get(1).text().split(",");
 
             header.setArtist(toSet(artists))
                     .setLyricist(toSet(lyricists))
