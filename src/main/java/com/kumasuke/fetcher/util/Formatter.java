@@ -21,6 +21,31 @@ public class Formatter {
     }
 
     /**
+     * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式和扩展名生成文件名。<br>
+     *
+     * @param header    {@code Header} 对象
+     * @param format    文件名格式字符串，其语法如下：<br>
+     *                  %ar% 艺术家<br>
+     *                  %ti% 标题<br>
+     *                  <p>示例（歌曲名：君への嘘，艺术家：VALSHE，扩展名：txt）：<br>
+     *                  输入格式字符串为 {@code "%ar% - %ti%"}，则输出文件名为 "VALSHE - 君への嘘.txt"</p>
+     * @param extension 文件扩展名，可省略点号（.）
+     * @return 按照给定格式生成的文件名
+     */
+    public static String getFilename(Header header, String format, String extension) {
+        String ar = header.getArtist()
+                .stream()
+                .collect(Collectors.joining(","));
+        String ti = header.getTitle();
+        String ext = extension.replaceAll("\\.?(\\w+)", ".$1");
+
+        String result = format.replace("%ar%", ar)
+                .replace("%ti%", ti) + ext;
+
+        return result.replaceAll("[\\\\/:*?\"<>|]", "");
+    }
+
+    /**
      * 转换 {@code Header} 对象中的信息至 Html 代码。<br>
      * Html 代码遵守 HTML5 规范，换行符为 <code>&lt;br&gt;</code>。
      *
