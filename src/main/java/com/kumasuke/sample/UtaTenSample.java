@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class UtaTenSample {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
-        String utaTenUrl = scanner.next();
-        Fetcher fetcher = new UtaTenFetcher(utaTenUrl, UserAgent.getUserAgent());
+        String utaTenPage = scanner.next();
+        Fetcher fetcher = new UtaTenFetcher(utaTenPage, UserAgent.getUserAgent());
 
         printFetcher(fetcher);
     }
