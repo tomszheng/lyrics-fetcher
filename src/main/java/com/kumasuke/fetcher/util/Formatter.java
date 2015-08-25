@@ -3,6 +3,8 @@ package com.kumasuke.fetcher.util;
 import com.kumasuke.fetcher.Header;
 import com.kumasuke.fetcher.Lyrics;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,7 @@ public class Formatter {
     // Html 换行符
     private static final String HTML_BR = "<br>";
     // 系统依赖的字符串换行符
-    private static final String TEXT_BR = System.getProperty("line.separator");
+    private static final String TEXT_BR = System.lineSeparator();
 
     // 工具类，防止被创建
     private Formatter() {
@@ -21,28 +23,80 @@ public class Formatter {
     }
 
     /**
-     * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式和扩展名生成文件名。<br>
+     * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式生成字符串。<br>
+     * 多个艺术家间的分隔符为 {@code ,}。
+     *
+     * @param header {@code Header} 对象
+     * @param format 文件名格式字符串，其语法如下：<br>
+     *               %ti% 标题<br>
+     *               %ar% 演唱者<br>
+     *               %lr% 作词者<br>
+     *               %co% 作曲者<br>
+     *               %ag% 编曲者
+     *               <p>示例（歌曲名：君への嘘，艺术家：VALSHE）：<br>
+     *               输入格式字符串为 {@code "%ar% - %ti%.txt"}，则输出字符串为 "VALSHE - 君への嘘.txt"</p>
+     * @return 按照给定格式生成的字符串
+     */
+    public static String headerToFormattedString(Header header, String format) {
+        return headerToFormattedString(header, format, ",");
+    }
+
+    /**
+     * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式和分隔生成字符串。
      *
      * @param header    {@code Header} 对象
      * @param format    文件名格式字符串，其语法如下：<br>
-     *                  %ar% 艺术家<br>
      *                  %ti% 标题<br>
+     *                  %ar% 演唱者<br>
+     *                  %lr% 作词者<br>
+     *                  %co% 作曲者<br>
+     *                  %ag% 编曲者
      *                  <p>示例（歌曲名：君への嘘，艺术家：VALSHE，扩展名：txt）：<br>
      *                  输入格式字符串为 {@code "%ar% - %ti%"}，则输出文件名为 "VALSHE - 君への嘘.txt"</p>
-     * @param extension 文件扩展名，可省略点号（.）
-     * @return 按照给定格式生成的文件名
+     * @param delimiter 多个艺术家的分隔符
+     * @return 按照给定格式生成的字符串
      */
-    public static String getFilename(Header header, String format, String extension) {
-        String ar = header.getArtist()
-                .stream()
-                .collect(Collectors.joining(","));
-        String ti = header.getTitle();
-        String ext = extension.replaceAll("\\.?(\\w+)", ".$1");
+    public static String headerToFormattedString(Header header, String format, String delimiter) {
+        Map<String, Boolean> isTagFound = checkTags(format);
+        Map<String, String> tagToContent = getContents(header, delimiter);
 
-        String result = format.replace("%ar%", ar)
-                .replace("%ti%", ti) + ext;
+        String result = format;
+        for (Map.Entry<String, Boolean> e : isTagFound.entrySet())
+            if (e.getValue()) {
+                String tag = e.getKey();
+                String content = tagToContent.get(tag);
+                result = result.replace(tag, content);
+            }
 
         return result.replaceAll("[\\\\/:*?\"<>|]", "");
+    }
+
+    private static Map<String, String> getContents(Header header, String delimiter) {
+        Map<String, String> tagToContent = new HashMap<>(5);
+
+        tagToContent.put("%ti%", header.getTitle());
+        tagToContent.put("%ar%", formatSet(header.getArtist(), delimiter));
+        tagToContent.put("%lr%", formatSet(header.getLyricist(), delimiter));
+        tagToContent.put("%co%", formatSet(header.getComposer(), delimiter));
+        tagToContent.put("%ag%", formatSet(header.getArranger(), delimiter));
+
+        return tagToContent;
+    }
+
+    private static Map<String, Boolean> checkTags(String format) {
+        Map<String, Boolean> isTagFound = new HashMap<>(5);
+
+        checkTag(format, "%ti%", isTagFound);
+        checkTag(format, "%ar%", isTagFound);
+        checkTag(format, "%lr%", isTagFound);
+        checkTag(format, "%co%", isTagFound);
+        checkTag(format, "%ag%", isTagFound);
+
+        return isTagFound;
+    }
+
+    private static void checkTag(String format, String tag, Map<String, Boolean> isTagFound) {
+        isTagFound.put(tag, format.contains(tag));
     }
 
     /**
@@ -58,7 +112,7 @@ public class Formatter {
 
     /**
      * 转换 {@code Header} 对象中的信息至纯文本。<br>
-     * 换行符为 <code>System.getProperty("line.separator")</code>。
+     * 换行符为与系统相关。
      *
      * @param header {@code Header} 对象
      * @return 纯文本格式的歌曲基本信息文本
@@ -80,7 +134,7 @@ public class Formatter {
 
     /**
      * 转换 {@code Lyrics} 对象中的歌词文本至纯文本。<br>
-     * 换行符为 <code>System.getProperty("line.separator")</code>。
+     * 换行符为与系统相关。
      *
      * @param lyrics {@code Lyrics} 对象
      * @return 纯文本的歌词文本
@@ -89,9 +143,12 @@ public class Formatter {
         return formatLyrics(lyrics, TEXT_BR);
     }
 
-    private static String formatSet(Set<String> set) {
-        return set.stream()
-                .collect(Collectors.joining(", "));
+    private static String formatSet(Set<String> set, String delimiter) {
+        if (set != null && !set.isEmpty())
+            return set.stream()
+                    .collect(Collectors.joining(delimiter));
+        else
+            return "unknown";
     }
 
     private static String formatHeader(Header header, String br) {
@@ -101,20 +158,20 @@ public class Formatter {
                 .append(br)
                 .append(br);
         text.append("\u6b4c\u624b\uff1a")
-                .append(formatSet(header.getArtist()))
+                .append(formatSet(header.getArtist(), ", "))
                 .append(br);
         text.append("\u4f5c\u8a5e\uff1a")
-                .append(formatSet(header.getLyricist()))
+                .append(formatSet(header.getLyricist(), ", "))
                 .append(br);
         text.append("\u4f5c\u66f2\uff1a")
-                .append(formatSet(header.getComposer()));
+                .append(formatSet(header.getComposer(), ", "));
 
         // 处理非必须的编曲
         Set<String> arg = header.getArranger();
         if (arg != null && !arg.isEmpty())
             text.append(br)
                     .append("\u7de8\u66f2\uff1a")
-                    .append(formatSet(arg));
+                    .append(formatSet(arg, ", "));
 
         return text.toString();
     }
