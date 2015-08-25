@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher;
 
+import com.kumasuke.fetcher.util.FetcherBuilder;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -11,6 +13,16 @@ import java.util.stream.Stream;
  * 歌词获取器，可以获取歌曲信息、歌词和歌词来源
  */
 public interface Fetcher {
+    /**
+     * 获取一个新的 {@code FetcherBuilder} 对象<br>
+     * 仅为使用方便而存在的方法，效果等同于调用 {@link FetcherBuilder#builder()}。
+     *
+     * @return {@code FetcherBuilder} 对象
+     */
+    static FetcherBuilder builder() {
+        return FetcherBuilder.builder();
+    }
+
     /**
      * 获取歌曲基本信息，包括标题、歌手、作词和作曲等。
      *

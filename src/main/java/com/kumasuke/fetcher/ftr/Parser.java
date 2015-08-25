@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher.ftr;
 
+import org.jsoup.Jsoup;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -89,6 +91,20 @@ abstract class Parser {
     }
 
     /**
+     * 使用给定方法修饰一行或多行歌词并将其装入 {@code ListLyrics} 歌词容器中。
+     *
+     * @param mapper 修饰方法
+     * @param dest   {@code ListLyrics} 歌词容器
+     * @param args   歌词文本
+     */
+    static void addTo(Function<String, String> mapper, ListLyrics dest, String... args) {
+        Stream.of(args)
+                .map(String::trim)
+                .map(mapper)
+                .forEach(dest::addLine);
+    }
+
+    /**
      * 将一行或多行歌词装入 {@code ListLyrics} 歌词容器中。
      *
      * @param dest    {@code ListLyrics} 歌词容器
@@ -127,6 +143,16 @@ abstract class Parser {
             return matcher.group(1);
         else
             throw new AssertionError("The regex always matches.");
+    }
+
+    /**
+     * 将 Html 标签转换为普通文本。
+     *
+     * @param html 需要转换 Html 文本
+     * @return 转换完成的普通文本
+     */
+    static String parseHtml(String html) {
+        return Jsoup.parse(html).text();
     }
 
     /**
