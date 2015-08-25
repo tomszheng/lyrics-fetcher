@@ -81,7 +81,7 @@ class UtaNetSongPageParser extends SongPageParser {
         if (header == null) {
             header = new EnumHeader();
 
-            Element titleElement = doc.select("h2.prev_pad").first();
+            Element titleElement = doc.select("#sound_uri + h2").first();
             String title = titleElement.text().trim();
             header.setTitle(title);
 

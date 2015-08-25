@@ -95,8 +95,10 @@ class KasiTimeSongPageParser extends SongPageParser {
 
             header.setArtist(allArtists.get(0))
                     .setLyricist(allArtists.get(1))
-                    .setComposer(allArtists.get(2))
-                    .setArranger(allArtists.get(3));
+                    .setComposer(allArtists.get(2));
+
+            if (allArtists.size() == 4)
+                header.setArranger(allArtists.get(3));
         }
 
         return header;
