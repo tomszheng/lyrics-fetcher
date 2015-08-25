@@ -116,7 +116,7 @@ class EvestaUnitedParser extends UnitedParser {
 
             Element lrcBody = doc.select("#lyricview div.body p").first();
             String[] lyricsText = lrcBody.html().split("<br(?: /)?>");
-            addTo(lyrics, lyricsText);
+            addTo(Parser::parseHtml, lyrics, lyricsText);
         }
 
         return lyrics;

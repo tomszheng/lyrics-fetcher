@@ -108,7 +108,7 @@ class KGetUnitedParser extends UnitedParser {
             lyrics = new ListLyrics();
 
             Element lrcBody = doc.select("#lyric-trunk").first();
-            addTo(lyrics, lrcBody.html().split("<br(?: /)?>"));
+            addTo(Parser::parseHtml, lyrics, lrcBody.html().split("<br(?: /)?>"));
         }
 
         return lyrics;

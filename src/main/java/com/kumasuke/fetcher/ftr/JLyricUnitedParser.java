@@ -25,7 +25,7 @@ class JLyricUnitedParser extends UnitedParser {
                         "\\u4f5c\\u8a5e\\uff1a(.*?)           # lyricist  \n" +
                         "\\u4f5c\\u66f2\\uff1a(.*)            # composer  \n",
                 Pattern.COMMENTS);
-        FULL_URL_PATTERN = Pattern.compile(".*?/artist/(\\w+)/(\\w+)(?:\\.html)?");
+        FULL_URL_PATTERN = Pattern.compile(".*?/artist/(a\\w+)/(l\\w+)\\.html");
     }
 
     private Document doc;
@@ -110,7 +110,7 @@ class JLyricUnitedParser extends UnitedParser {
 
             Element lrcBody = doc.select("#lyricBody").first();
             String[] lyricsText = lrcBody.html().split("<br(?: /)?>");
-            addTo(lyrics, lyricsText);
+            addTo(Parser::parseHtml, lyrics, lyricsText);
         }
 
         return lyrics;

@@ -83,7 +83,7 @@ class UtaTenUnitedParser extends UnitedParser {
             Matcher titleMatcher = TITLE_PATTERN.matcher(titleElement.html());
 
             if (titleMatcher.matches()) {
-                String title = titleMatcher.group(1).trim();
+                String title = parseHtml(titleMatcher.group(1)).trim();
                 header.setTitle(title);
             }
 
@@ -116,7 +116,7 @@ class UtaTenUnitedParser extends UnitedParser {
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
             String[] lrcWithoutRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1").split("<br(?: /)?>");
-            addTo(lyrics, lrcWithoutRubyText);
+            addTo(Parser::parseHtml, lyrics, lrcWithoutRubyText);
         }
 
         return lyrics;
@@ -135,7 +135,7 @@ class UtaTenUnitedParser extends UnitedParser {
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
             String[] lrcWithRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1($2)").split("<br(?: /)?>");
-            addTo(lyricsWithRuby, lrcWithRubyText);
+            addTo(Parser::parseHtml, lyricsWithRuby, lrcWithRubyText);
         }
 
         return lyricsWithRuby;
