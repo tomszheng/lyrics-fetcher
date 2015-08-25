@@ -20,11 +20,11 @@ class AnimeSongUnitedParser extends UnitedParser {
     private static final Pattern FULL_URL_PATTERN;
 
     static {
-        ALL_INFO_PATTERN = Pattern.compile("(?<title>.*?)\\s+              # title     \n" +
+        ALL_INFO_PATTERN = Pattern.compile("(?<title>.*?)\\n\\s+           # title     \n" +
                         "\\u4f5c\\u8a5e\\uff1a(?<lyricist>.*?)\\uff0f\\s*  # lyricist  \n" +
                         "\\u4f5c\\u66f2\\uff1a(?<composer>.*?)\\uff0f\\s*  # composer  \n" +
                         "\\u7de8\\u66f2\\uff1a(?<arranger>.*?)\\uff0f\\s*  # arranger  \n" +
-                        "\\u6b4c\\uff1a(?<artist>.*?)\\s+                  # artist    \n" +
+                        "\\u6b4c\\uff1a(?<artist>.*?)\\n\\s+               # artist    \n" +
                         "(?<lyrics>.*)                                     # lyrics    \n",
                 Pattern.COMMENTS | Pattern.DOTALL);
         FULL_URL_PATTERN = Pattern.compile(".*?/animesong/(\\w{1,2})/(\\w+)/(\\w+)\\.html");
