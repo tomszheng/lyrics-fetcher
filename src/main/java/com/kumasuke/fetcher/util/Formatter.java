@@ -5,6 +5,7 @@ import com.kumasuke.fetcher.Lyrics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,8 @@ public class Formatter {
 
     /**
      * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式生成字符串。<br>
-     * 多个艺术家间的分隔符为 {@code ,}。
+     * 多个艺术家间的分隔符为 {@code ,}。<br>
+     * 如果无法获得指定信息，则相应位置将为 {@code "unknown"}。
      *
      * @param header {@code Header} 对象
      * @param format 文件名格式字符串，其语法如下：<br>
@@ -34,7 +36,7 @@ public class Formatter {
      *               %co% 作曲者<br>
      *               %ag% 编曲者
      *               <p>示例（歌曲名：君への嘘，艺术家：VALSHE）：<br>
-     *               输入格式字符串为 {@code "%ar% - %ti%.txt"}，则输出字符串为 "VALSHE - 君への嘘.txt"</p>
+     *               输入格式字符串为 {@code "%ar% - %ti%"}，则输出字符串为 "VALSHE - 君への嘘"</p>
      * @return 按照给定格式生成的字符串
      */
     public static String headerToFormattedString(Header header, String format) {
@@ -42,7 +44,8 @@ public class Formatter {
     }
 
     /**
-     * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式和分隔生成字符串。
+     * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式和分隔生成字符串。<br>
+     * 如果无法获得指定信息，则相应位置将为 {@code "unknown"}。
      *
      * @param header    {@code Header} 对象
      * @param format    文件名格式字符串，其语法如下：<br>
@@ -65,6 +68,7 @@ public class Formatter {
             if (e.getValue()) {
                 String tag = e.getKey();
                 String content = tagToContent.get(tag);
+
                 result = result.replace(tag, content);
             }
 
@@ -158,20 +162,26 @@ public class Formatter {
                 .append(br)
                 .append(br);
         text.append("\u6b4c\u624b\uff1a")
-                .append(formatSet(header.getArtist(), ", "))
-                .append(br);
-        text.append("\u4f5c\u8a5e\uff1a")
-                .append(formatSet(header.getLyricist(), ", "))
-                .append(br);
-        text.append("\u4f5c\u66f2\uff1a")
-                .append(formatSet(header.getComposer(), ", "));
+                .append(formatSet(header.getArtist(), ", "));
 
-        // 处理非必须的编曲
-        Set<String> arg = header.getArranger();
-        if (arg != null && !arg.isEmpty())
+        // 处理非必须的部分
+        Set<String> lr = header.getLyricist();
+        if (lr != null && !lr.isEmpty())
+            text.append(br)
+                    .append("\u4f5c\u8a5e\uff1a")
+                    .append(formatSet(lr, ", "));
+
+        Set<String> co = header.getComposer();
+        if (co != null && !co.isEmpty())
+            text.append(br)
+                    .append("\u4f5c\u66f2\uff1a")
+                    .append(formatSet(co, ", "));
+
+        Set<String> ag = header.getArranger();
+        if (ag != null && !ag.isEmpty())
             text.append(br)
                     .append("\u7de8\u66f2\uff1a")
-                    .append(formatSet(arg, ", "));
+                    .append(formatSet(ag, ", "));
 
         return text.toString();
     }
