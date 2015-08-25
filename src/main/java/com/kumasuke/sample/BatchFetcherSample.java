@@ -15,7 +15,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatchLyricsFetcher {
+/**
+ * 批量歌词获取示例
+ */
+public class BatchFetcherSample {
     private static int RETRY_TIME_BOUND = 5;
     private static boolean ENABLE_RUBY_OUTPUT = false;
     private static boolean ENABLE_INDEX_NUMBER = false;
@@ -25,12 +28,15 @@ public class BatchLyricsFetcher {
     private static String SITE;
 
     public static void main(String[] args) {
+        // 分析命令行参数并检查是否完全
         parseCmdArgs(args);
         checkArgs(FILE_INPUT, DIRECTORY_OUTPUT, SITE);
 
+        // 输出下载的歌词文件
         List<String> pages = loadPages();
         outputFile(pages);
 
+        // 下载完成，显示提示
         System.out.println("(100.00%) 歌词下载完成！");
     }
 
@@ -45,6 +51,9 @@ public class BatchLyricsFetcher {
         if (ENABLE_INDEX_NUMBER)
             filenameFormat = "[%0" + getNumberBits(pages.size()) + "d] %s";
 
+        // 获取构造器
+        FetcherBuilder fetcherBuilder = Fetcher.builder();
+
         // 逐条获取
         for (int i = 0; i < pages.size(); i++) {
             String page = pages.get(i);
@@ -52,7 +61,7 @@ public class BatchLyricsFetcher {
             boolean finished = false;
 
             // 判断是否完成或超出重试次数
-            while (!finished && retryTime++ < RETRY_TIME_BOUND) {
+            while (!finished && retryTime < RETRY_TIME_BOUND) {
                 try {
                     // 进度计算与显示
                     float progress = (float) i / pages.size() * 100;
@@ -62,15 +71,14 @@ public class BatchLyricsFetcher {
                         System.out.printf("(%.2f%%) 正在重试第 %d 首，共 %d 首...\r", progress, i + 1, pages.size());
 
                     // 构造获取器
-                    Fetcher fetcher = FetcherBuilder.builder()
-                            .site(SITE)
+                    Fetcher fetcher = fetcherBuilder.site(SITE)
                             .page(page)
                             .build();
                     Header header = fetcher.getHeader();
                     Lyrics lyrics = fetcher.getLyrics();
 
                     // 获取并处理输出文件名
-                    String filename = Formatter.getFilename(header, "%ar%「%ti%」", "txt");
+                    String filename = Formatter.headerToFormattedString(header, "%ar%「%ti%」.txt");
                     if (ENABLE_INDEX_NUMBER)
                         filename = String.format(filenameFormat, i + 1, filename);
                     // 输出文件
@@ -83,7 +91,8 @@ public class BatchLyricsFetcher {
 
                         if (lyricsWithRuby != null)
                             printOutTo(DIRECTORY_OUTPUT + "\\Ruby\\" + filename, header, lyricsWithRuby);
-                        else
+                        else if (!SITE.equals("*"))
+                            // 该站点不支持获取含有注音的歌词
                             ENABLE_RUBY_OUTPUT = false;
                     }
 
@@ -93,7 +102,7 @@ public class BatchLyricsFetcher {
                     // 连接超时，进行重试
                     if (e.getMessage().contains("timed out")) {
                         // 超出重试次数，显示错误
-                        if (retryTime >= RETRY_TIME_BOUND)
+                        if (retryTime++ >= RETRY_TIME_BOUND)
                             System.err.printf("网络连接错误，第 %d 首下载失败！%n", i + 1);
                     } else {
                         // 无法处理的异常，输出异常信息并结束循环
@@ -101,7 +110,13 @@ public class BatchLyricsFetcher {
                         System.err.printf("第 %d 首下载失败！%n", i + 1);
                         e.printStackTrace();
                     }
-                } // try-catch
+                } catch (IllegalArgumentException e) {
+                    System.err.println("输入文件中的地址有误。无法解析，请检查！");
+                    e.printStackTrace();
+                } finally {
+                    // 重置构造器
+                    fetcherBuilder.reset();
+                } // try-catch-finally
             } // while
         } // for
     }
@@ -112,6 +127,7 @@ public class BatchLyricsFetcher {
             System.exit(1);
         }
 
+        // 提取命令行参数信息
         for (int i = 0; i < args.length; i++)
             switch (args[i]) {
                 case "-rt":
@@ -155,6 +171,7 @@ public class BatchLyricsFetcher {
         List<String> result = new ArrayList<>();
         Path file = Paths.get(FILE_INPUT);
 
+        // 按行读取文件并添加的结果列表中
         try {
             Files.lines(file)
                     .map(String::trim)

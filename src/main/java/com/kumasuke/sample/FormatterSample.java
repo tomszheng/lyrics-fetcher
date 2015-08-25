@@ -7,6 +7,9 @@ import com.kumasuke.fetcher.util.UserAgent;
 
 import java.io.IOException;
 
+/**
+ * 格式化器使用示例
+ */
 public class FormatterSample {
     public static void main(String[] args) throws Exception {
         Fetcher fetcher = FetcherBuilder.builder()
@@ -15,6 +18,20 @@ public class FormatterSample {
                 .userAgent(UserAgent.getUserAgent())
                 .build();
 
+        printFormattedFetcher(fetcher);
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static void pressAnyKeyToContinue() {
+        System.out.println("Press any key to continue...");
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void printFormattedFetcher(Fetcher fetcher) {
         System.out.println("Html part:");
         System.out.println(Formatter.headerToHtml(fetcher.getHeader()));
         System.out.println(Formatter.lyricsToHtml(fetcher.getLyrics()));
@@ -24,15 +41,5 @@ public class FormatterSample {
         System.out.println(Formatter.headerToText(fetcher.getHeader()));
         System.out.println(Formatter.lyricsToText(fetcher.getLyrics()));
         System.out.println("Done!");
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void pressAnyKeyToContinue() {
-        System.out.println("Press any key to continue...");
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
