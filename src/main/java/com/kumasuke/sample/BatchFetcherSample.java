@@ -25,7 +25,7 @@ public class BatchFetcherSample {
 
     private static String FILE_INPUT;
     private static String DIRECTORY_OUTPUT;
-    private static String SITE;
+    private static String SITE = "*";
 
     public static void main(String[] args) {
         // 分析命令行参数并检查是否完全
@@ -65,7 +65,7 @@ public class BatchFetcherSample {
                 try {
                     // 进度计算与显示
                     float progress = (float) i / pages.size() * 100;
-                    if (retryTime == 1)
+                    if (retryTime == 0)
                         System.out.printf("(%.2f%%) 正在下载第 %d 首，共 %d 首...\r", progress, i + 1, pages.size());
                     else
                         System.out.printf("(%.2f%%) 正在重试第 %d 首，共 %d 首...\r", progress, i + 1, pages.size());
@@ -144,13 +144,13 @@ public class BatchFetcherSample {
                 case "-fo":
                     DIRECTORY_OUTPUT = args[++i];
                     break;
-                case "-ws":
+                case "-s":
                     SITE = args[++i];
                     break;
-                case "-rb":
+                case "-r":
                     ENABLE_RUBY_OUTPUT = true;
                     break;
-                case "-id":
+                case "-i":
                     ENABLE_INDEX_NUMBER = true;
                     break;
                 default:
