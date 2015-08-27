@@ -6,9 +6,11 @@ import com.kumasuke.fetcher.ftr.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.kumasuke.fetcher.util.Tools.isNullOrEmpty;
+import static java.util.Objects.requireNonNull;
 
 /**
  * {@code Fetcher} 构造器，用于统一地构造 {@code Fetcher} 对象
@@ -32,6 +34,7 @@ public class FetcherBuilder {
         URL_TO_SITE_PATTERNS.put("joysound.com", Pattern.compile(".*?joysound\\.com/web/search/song/\\d+/?"));
         URL_TO_SITE_PATTERNS.put("jtw.zaq.ne.jp/animesong",
                 Pattern.compile(".*?jtw\\.zaq\\.ne\\.jp/animesong/\\w{1,2}/\\w+/\\w+\\.html"));
+        URL_TO_SITE_PATTERNS.put("petitlyrics.com", Pattern.compile(".*?petitlyrics\\.com/lyrics/\\d+"));
     }
 
     private String site;
@@ -84,11 +87,12 @@ public class FetcherBuilder {
      *             animap.jp<br>
      *             evesta.jp<br>
      *             joysound.com<br>
-     *             jtw.zaq.ne.jp/animesong</p>
+     *             jtw.zaq.ne.jp/animesong<br>
+     *             petitlyrics.com</p>
      * @return {@code FetcherBuilder} 对象，便于链式编程
      */
     public FetcherBuilder site(String site) {
-        this.site = Objects.requireNonNull(site).toLowerCase();
+        this.site = requireNonNull(site).toLowerCase();
 
         return this;
     }
@@ -127,13 +131,13 @@ public class FetcherBuilder {
      */
     public Fetcher build() throws IOException {
         try {
-            Objects.requireNonNull(site, "The parameter 'site' haven't been set yet.");
-            Objects.requireNonNull(page, "The parameter 'page' haven't been set yet.");
+            requireNonNull(site, "The parameter 'site' haven't been set yet.");
+            requireNonNull(page, "The parameter 'page' haven't been set yet.");
         } catch (NullPointerException e) {
             throw new IllegalStateException(e);
         }
 
-        if (userAgent == null || userAgent.isEmpty())
+        if (isNullOrEmpty(userAgent))
             userAgent = UserAgent.getUserAgent();
 
         if (site.equals("*"))
@@ -174,6 +178,9 @@ public class FetcherBuilder {
                 break;
             case "joysound.com":
                 fetcher = new JoySoundFetcher(page, userAgent);
+                break;
+            case "petitlyrics.com":
+                fetcher = new PetitLyricsFetcher(page, userAgent);
                 break;
             default:
                 throw new IllegalArgumentException
