@@ -5,9 +5,10 @@ import com.kumasuke.fetcher.Lyrics;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.kumasuke.fetcher.util.Tools.nonNullAndNonEmpty;
 
 /**
  * 格式化器，用于格式化相应文本，便于显示和操作
@@ -26,7 +27,7 @@ public class Formatter {
     /**
      * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式生成字符串。<br>
      * 多个艺术家间的分隔符为 {@code ,}。<br>
-     * 如果无法获得指定信息，则相应位置将为 {@code "unknown"}。
+     * 如果无法获得指定信息，则相应位置将为 {@code [unknown]}。
      *
      * @param header {@code Header} 对象
      * @param format 文件名格式字符串，其语法如下：<br>
@@ -45,7 +46,7 @@ public class Formatter {
 
     /**
      * 提取给定 {@code Header} 对象中的 标题和艺术家信息，并按照指定格式和分隔生成字符串。<br>
-     * 如果无法获得指定信息，则相应位置将为 {@code "unknown"}。
+     * 如果无法获得指定信息，则相应位置将为 {@code [unknown]}。
      *
      * @param header    {@code Header} 对象
      * @param format    文件名格式字符串，其语法如下：<br>
@@ -54,8 +55,8 @@ public class Formatter {
      *                  %lr% 作词者<br>
      *                  %co% 作曲者<br>
      *                  %ag% 编曲者
-     *                  <p>示例（歌曲名：君への嘘，艺术家：VALSHE，扩展名：txt）：<br>
-     *                  输入格式字符串为 {@code "%ar% - %ti%"}，则输出文件名为 "VALSHE - 君への嘘.txt"</p>
+     *                  <p>示例（歌曲名：君への嘘，艺术家：VALSHE）：<br>
+     *                  输入格式字符串为 {@code "%ar% - %ti%"}，则输出文件名为 "VALSHE - 君への嘘"</p>
      * @param delimiter 多个艺术家的分隔符
      * @return 按照给定格式生成的字符串
      */
@@ -148,11 +149,11 @@ public class Formatter {
     }
 
     private static String formatSet(Set<String> set, String delimiter) {
-        if (set != null && !set.isEmpty())
+        if (nonNullAndNonEmpty(set))
             return set.stream()
                     .collect(Collectors.joining(delimiter));
         else
-            return "unknown";
+            return "[unknown]";
     }
 
     private static String formatHeader(Header header, String br) {
@@ -166,19 +167,19 @@ public class Formatter {
 
         // 处理非必须的部分
         Set<String> lr = header.getLyricist();
-        if (lr != null && !lr.isEmpty())
+        if (nonNullAndNonEmpty(lr))
             text.append(br)
                     .append("\u4f5c\u8a5e\uff1a")
                     .append(formatSet(lr, ", "));
 
         Set<String> co = header.getComposer();
-        if (co != null && !co.isEmpty())
+        if (nonNullAndNonEmpty(co))
             text.append(br)
                     .append("\u4f5c\u66f2\uff1a")
                     .append(formatSet(co, ", "));
 
         Set<String> ag = header.getArranger();
-        if (ag != null && !ag.isEmpty())
+        if (nonNullAndNonEmpty(ag))
             text.append(br)
                     .append("\u7de8\u66f2\uff1a")
                     .append(formatSet(ag, ", "));

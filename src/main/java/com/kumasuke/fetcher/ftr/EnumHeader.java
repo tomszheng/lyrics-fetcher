@@ -4,6 +4,8 @@ import com.kumasuke.fetcher.Header;
 
 import java.util.*;
 
+import static java.util.Objects.*;
+
 /**
  * 存放歌曲基本信息的容器。<br>
  * 使用 {@code EnumMap} 存放信息。
@@ -53,7 +55,7 @@ class EnumHeader implements Header {
         @SuppressWarnings("unchecked")
         Set<String> result = (Set<String>) data.get(Type.ARTIST);
 
-        return Objects.isNull(result) ? null : Collections.unmodifiableSet(result);
+        return isNull(result) ? null : Collections.unmodifiableSet(result);
     }
 
     /**
@@ -79,7 +81,7 @@ class EnumHeader implements Header {
         @SuppressWarnings("unchecked")
         Set<String> result = (Set<String>) data.get(Type.LYRICIST);
 
-        return Objects.isNull(result) ? null : Collections.unmodifiableSet(result);
+        return isNull(result) ? null : Collections.unmodifiableSet(result);
     }
 
     /**
@@ -105,7 +107,7 @@ class EnumHeader implements Header {
         @SuppressWarnings("unchecked")
         Set<String> result = (Set<String>) data.get(Type.COMPOSER);
 
-        return Objects.isNull(result) ? null : Collections.unmodifiableSet(result);
+        return isNull(result) ? null : Collections.unmodifiableSet(result);
     }
 
     /**
@@ -131,7 +133,7 @@ class EnumHeader implements Header {
         @SuppressWarnings("unchecked")
         Set<String> result = (Set<String>) data.get(Type.ARRANGER);
 
-        return Objects.isNull(result) ? null : Collections.unmodifiableSet(result);
+        return isNull(result) ? null : Collections.unmodifiableSet(result);
     }
 
     /**
@@ -223,7 +225,7 @@ class EnumHeader implements Header {
          * @param value 条目值
          */
         private ObjectItem(String name, Object value) {
-            this.name = Objects.requireNonNull(name, "The name value should not be null.");
+            this.name = requireNonNull(name, "The name value should not be null.");
             this.value = value;
         }
 
@@ -250,7 +252,7 @@ class EnumHeader implements Header {
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, value);
+            return hash(name, value);
         }
 
         @Override

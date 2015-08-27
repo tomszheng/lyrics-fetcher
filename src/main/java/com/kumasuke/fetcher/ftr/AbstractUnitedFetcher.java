@@ -4,7 +4,7 @@ import com.kumasuke.fetcher.Fetcher;
 import com.kumasuke.fetcher.Header;
 import com.kumasuke.fetcher.Lyrics;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 /**
  * 用于歌曲基本信息与歌词文本一同获取的站点的歌词获取器。
@@ -22,8 +22,8 @@ abstract class AbstractUnitedFetcher<T extends UnitedParser> implements Fetcher 
      * @param userAgent {@code UserAgent} 字符串
      */
     AbstractUnitedFetcher(String page, String userAgent) {
-        Objects.requireNonNull(page, "The parameter 'page' should be non-null value.");
-        Objects.requireNonNull(userAgent, "The parameter 'userAgent' should be non-null value.");
+        requireNonNull(page, "The parameter 'page' should be non-null value.");
+        requireNonNull(userAgent, "The parameter 'userAgent' should be non-null value.");
 
         if (page.isEmpty() || userAgent.isEmpty())
             throw new IllegalArgumentException("The parameters shouldn't be empty value.");

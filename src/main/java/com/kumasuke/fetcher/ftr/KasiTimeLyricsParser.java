@@ -4,6 +4,8 @@ import com.kumasuke.fetcher.util.URLReader;
 
 import java.io.IOException;
 
+import static java.util.Objects.isNull;
+
 /**
  * 歌詞タイム (Kasi-Time.com) 的歌词分析器。
  */
@@ -34,7 +36,7 @@ class KasiTimeLyricsParser extends LyricsParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             int begin = js.indexOf("write('") + 7;

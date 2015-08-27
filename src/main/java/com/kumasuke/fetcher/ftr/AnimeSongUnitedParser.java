@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 /**
  * アニメソングの歌詞ならここにおまかせ？ (Jtw.Zaq.Ne.jp/AnimeSong) 的统合分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -77,7 +79,7 @@ class AnimeSongUnitedParser extends UnitedParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             if (matcher.matches()) {
@@ -105,7 +107,7 @@ class AnimeSongUnitedParser extends UnitedParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             if (matcher.matches()) {

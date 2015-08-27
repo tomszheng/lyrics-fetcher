@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 /**
  * うたまっぷ (UtaMap.com) 的歌词分析器。
  */
@@ -44,7 +46,7 @@ class UtaMapLyricsParser extends LyricsParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             Matcher lyricsTextMatcher = JS_LYRICS_PATTERN.matcher(js);

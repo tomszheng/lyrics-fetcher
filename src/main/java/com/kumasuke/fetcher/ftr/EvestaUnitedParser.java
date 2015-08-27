@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
+
 /**
  * イベスタ (Evesta.jp) 的统合分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -76,7 +79,7 @@ class EvestaUnitedParser extends UnitedParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Element titleElement = doc.select("#titleBand h1").first();
@@ -111,12 +114,12 @@ class EvestaUnitedParser extends UnitedParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             Element lrcBody = doc.select("#lyricview div.body p").first();
             String[] lyricsText = lrcBody.html().split("<br(?: /)?>");
-            addTo(Parser::parseHtml, lyrics, lyricsText);
+            addTo(lyrics, Parser::parseHtml, lyricsText);
         }
 
         return lyrics;

@@ -4,6 +4,8 @@ import com.kumasuke.fetcher.util.URLReader;
 
 import java.io.IOException;
 
+import static java.util.Objects.isNull;
+
 /**
  * あにまっぷ (AniMap.jp) 的歌词分析器。
  */
@@ -25,7 +27,7 @@ class AniMapLyricsParser extends LyricsParser {
                 .timeout(5000)
                 .referer(songPage.flashUrl())
                 .userAgent(userAgent)
-                .requestProperty(toMap(X_REQUESTED_WITH_PROPERTY))
+                .xRequestedWith(FLASH_VERSION)
                 .getText();
     }
 
@@ -36,7 +38,7 @@ class AniMapLyricsParser extends LyricsParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             int begin = doc.indexOf("test2=") + 6;

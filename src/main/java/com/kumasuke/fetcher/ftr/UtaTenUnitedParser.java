@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 /**
  * UtaTen (UtaTen.com) 的统合分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -76,7 +78,7 @@ class UtaTenUnitedParser extends UnitedParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Element titleElement = doc.select("div.contentBox__title--lyricTitle h1").first();
@@ -110,13 +112,13 @@ class UtaTenUnitedParser extends UnitedParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
             String[] lrcWithoutRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1").split("<br(?: /)?>");
-            addTo(Parser::parseHtml, lyrics, lrcWithoutRubyText);
+            addTo(lyrics, Parser::parseHtml, lrcWithoutRubyText);
         }
 
         return lyrics;
@@ -129,13 +131,13 @@ class UtaTenUnitedParser extends UnitedParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     ListLyrics lyricsWithRuby() {
-        if (lyricsWithRuby == null) {
+        if (isNull(lyricsWithRuby)) {
             lyricsWithRuby = new ListLyrics();
 
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
             String[] lrcWithRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1($2)").split("<br(?: /)?>");
-            addTo(Parser::parseHtml, lyricsWithRuby, lrcWithRubyText);
+            addTo(lyricsWithRuby, Parser::parseHtml, lrcWithRubyText);
         }
 
         return lyricsWithRuby;

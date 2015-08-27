@@ -4,6 +4,8 @@ import com.kumasuke.fetcher.util.URLReader;
 
 import java.io.IOException;
 
+import static java.util.Objects.isNull;
+
 /**
  * 歌詞ナビ (KashiNavi.com) 的歌词分析器。
  */
@@ -24,9 +26,9 @@ class KashiNaviLyricsParser extends LyricsParser {
                 .timeout(5000)
                 .referer(songPage.lrcUrl())
                 .userAgent(userAgent)
-                .requestProperty(toMap(X_REQUESTED_WITH_PROPERTY))
-                .usePost(true)
-                .requestParameter(songPage.lrcCgiParameters())
+                .xRequestedWith(FLASH_VERSION)
+                .usePost()
+                .requestFormData(songPage.lrcCgiParameters())
                 .getText();
     }
 
@@ -37,7 +39,7 @@ class KashiNaviLyricsParser extends LyricsParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             int begin = doc.indexOf("\n") + 1;

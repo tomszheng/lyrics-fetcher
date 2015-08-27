@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 /**
  * うたまっぷ (UtaMap.com) 的歌词页分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -23,7 +25,7 @@ class UtaMapSongPageParser extends SongPageParser {
 
     static {
         FULL_URL_PATTERN = Pattern.compile(".*?com/show(?:kasi|top)\\.php\\?surl=([-\\w]+)");
-        SONG_CODE_PATTERN = Pattern.compile("[-\\w]+");
+        SONG_CODE_PATTERN = WORD_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -73,7 +75,7 @@ class UtaMapSongPageParser extends SongPageParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Element titleElement = doc.select("td.kasi1").first();

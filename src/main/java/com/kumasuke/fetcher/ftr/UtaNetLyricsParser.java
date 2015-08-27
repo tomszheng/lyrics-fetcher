@@ -9,6 +9,8 @@ import org.xml.sax.SAXException;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 /**
  * 歌ネット (Uta-Net.com) 的歌词分析器。<br>
  * 使用 {@code dom4j} 包获取页面信息。
@@ -48,7 +50,7 @@ class UtaNetLyricsParser extends LyricsParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             // 根据 dom4j 文档可以安全转换

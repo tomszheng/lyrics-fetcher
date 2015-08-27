@@ -1,14 +1,12 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.util.Tools;
 import org.jsoup.Jsoup;
 
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -17,29 +15,34 @@ import java.util.stream.Stream;
 abstract class Parser {
     // Flash 播放器版本
     static final String FLASH_VERSION = "ShockwaveFlash/18.0.0.232";
-    // 通用 Http 请求属性 X-Requested-With 键值对
-    static final P X_REQUESTED_WITH_PROPERTY = p("X-Requested-With", FLASH_VERSION);
+    // '&nbsp;' 被 Jsoup 解析成的值，其 Unicode 值为 '\u00a0'
+    static final String JSOUP_NBSP = "\u00a0";
 
     // 用于去除两端半角 / 全角空格的正则表达式
     static final Pattern SUPER_TRIM_PATTERN;
     // 用于去除两端 Html 和普通空格的正则表达式
     static final Pattern HTML_TRIM_PATTERN;
 
+    // 匹配纯数字歌曲代码的正则表达式
+    static final Pattern NUMBER_SONG_CODE_PATTERN;
+    // 匹配字母数字混合歌曲代码的正则表达式
+    static final Pattern WORD_SONG_CODE_PATTERN;
+
     static {
         SUPER_TRIM_PATTERN = Pattern.compile("[\\u3000\\s]*(.*?)[\\u3000\\s]*");
         HTML_TRIM_PATTERN = Pattern.compile("[\\u00a0\\s]*(.*?)[\\u00a0\\s]*");
+        NUMBER_SONG_CODE_PATTERN = Pattern.compile("\\d+");
+        WORD_SONG_CODE_PATTERN = Pattern.compile("[-\\w]+");
     }
 
     /**
-     * 将一个或多个 {@code String} 对象转换为一个 {@code Set} 对象。
+     * 将一个或多个对象转换为一个 {@code Set} 对象, 同时去除字符串两端空格。
      *
      * @param args 需要转换的 {@code String} 对象
      * @return 装有传入的 {@code String} 对象的 {@code Set} 对象
      */
     static Set<String> toSet(String... args) {
-        return Stream.of(args)
-                .map(String::trim)
-                .collect(Collectors.toSet());
+        return Tools.toSet(String::trim, args);
     }
 
     /**
@@ -51,31 +54,7 @@ abstract class Parser {
      * @return 装有传入的 {@code String} 对象的 {@code Set} 对象
      */
     static Set<String> toSet(Function<String, String> trimmer, String... args) {
-        return Stream.of(args)
-                .map(trimmer)
-                .collect(Collectors.toSet());
-    }
-
-    /**
-     * 生成一个 {@code String} 键值对。
-     *
-     * @param key   {@code key} 值
-     * @param value {@code value} 值
-     * @return 生成的键值对，可作为 {@link Parser#toMap(P...) toMap(E...)} 的参数
-     */
-    static P p(String key, String value) {
-        return new P(key, value);
-    }
-
-    /**
-     * 将一个或多个 {@code String} 键值对转换为一个 {@code Map} 对象。
-     *
-     * @param args 需要转换的 {@code String} 键值对，由 {@link Parser#p(String, String) p(String, String)} 方法生成
-     * @return 装有传入的 {@code String} 键值对的 {@code Map} 对象
-     */
-    static Map<String, String> toMap(P... args) {
-        return Stream.of(args)
-                .collect(Collectors.toMap(P::getKey, P::getValue));
+        return Tools.toSet(trimmer, args);
     }
 
     /**
@@ -93,11 +72,11 @@ abstract class Parser {
     /**
      * 使用给定方法修饰一行或多行歌词并将其装入 {@code ListLyrics} 歌词容器中。
      *
-     * @param mapper 修饰方法
      * @param dest   {@code ListLyrics} 歌词容器
+     * @param mapper 修饰方法
      * @param args   歌词文本
      */
-    static void addTo(Function<String, String> mapper, ListLyrics dest, String... args) {
+    static void addTo(ListLyrics dest, Function<String, String> mapper, String... args) {
         Stream.of(args)
                 .map(String::trim)
                 .map(mapper)
@@ -153,27 +132,5 @@ abstract class Parser {
      */
     static String parseHtml(String html) {
         return Jsoup.parse(html).text();
-    }
-
-    /**
-     * 临时键值对，外部仅可使用 {@link Parser#p(String, String) p(String, String)} 方法创建。<br>
-     * 无法修改，且无法从外部访问内部值。
-     */
-    static class P {
-        private final String key;
-        private final String value;
-
-        private P(String key, String value) {
-            this.key = Objects.requireNonNull(key, "The 'key' must not be null.");
-            this.value = value;
-        }
-
-        private String getKey() {
-            return key;
-        }
-
-        private String getValue() {
-            return value;
-        }
     }
 }

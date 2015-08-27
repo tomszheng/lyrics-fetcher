@@ -1,9 +1,10 @@
 package com.kumasuke.fetcher;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * 存放歌曲基本信息的容器，无法进行修改
@@ -66,7 +67,7 @@ public interface Header extends Iterable<Header.Item> {
      * @param action 指定的操作
      */
     default void forEach(BiConsumer<String, Object> action) {
-        Objects.requireNonNull(action);
+        requireNonNull(action);
 
         for (Item i : this)
             action.accept(i.getName(), i.getValue());

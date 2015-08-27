@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 /**
  * 歌ネット (Uta-Net.com) 的歌词页分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -28,7 +30,7 @@ class UtaNetSongPageParser extends SongPageParser {
                         "\\u4f5c\\u66f2\\uff1a\\s(.*)                 # composer  \n",
                 Pattern.COMMENTS);
         FULL_URL_PATTERN = Pattern.compile(".*?/song/(\\d+)/?");
-        SONG_CODE_PATTERN = Pattern.compile("\\d+");
+        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -78,7 +80,7 @@ class UtaNetSongPageParser extends SongPageParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Element titleElement = doc.select("#sound_uri + h2").first();

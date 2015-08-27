@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.kumasuke.fetcher.util.Tools.p;
+import static com.kumasuke.fetcher.util.Tools.toMap;
+import static java.util.Objects.isNull;
+
 /**
  * 歌詞ナビ (KashiNavi.com) 的歌词页分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -28,7 +32,7 @@ class KashiNaviSongPageParser extends SongPageParser {
                         "\\u4f5c\\u66f2\\u3000\\uff1a\\u3000(.*?)                   # composer  \n",
                 Pattern.COMMENTS);
         FULL_URL_PATTERN = Pattern.compile(".*?/song_view\\.html\\?(\\d+)");
-        SONG_CODE_PATTERN = Pattern.compile("\\d+");
+        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -87,7 +91,7 @@ class KashiNaviSongPageParser extends SongPageParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Elements titleAndArtist = doc.select("table[cellpadding=2] table[cellspacing=5]")

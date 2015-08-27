@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 /**
  * 歌詞ＧＥＴ (KGet.jp) 的统合分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -23,7 +25,7 @@ class KGetUnitedParser extends UnitedParser {
 
     static {
         FULL_URL_PATTERN = Pattern.compile(".*?/lyric/(\\d+)/?.*");
-        SONG_CODE_PATTERN = Pattern.compile("\\d+");
+        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -74,7 +76,7 @@ class KGetUnitedParser extends UnitedParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Element titleElement = doc.select("h1[itemprop=name]").first();
@@ -104,11 +106,11 @@ class KGetUnitedParser extends UnitedParser {
      */
     @Override
     ListLyrics lyrics() {
-        if (lyrics == null) {
+        if (isNull(lyrics)) {
             lyrics = new ListLyrics();
 
             Element lrcBody = doc.select("#lyric-trunk").first();
-            addTo(Parser::parseHtml, lyrics, lrcBody.html().split("<br(?: /)?>"));
+            addTo(lyrics, Parser::parseHtml, lrcBody.html().split("<br(?: /)?>"));
         }
 
         return lyrics;

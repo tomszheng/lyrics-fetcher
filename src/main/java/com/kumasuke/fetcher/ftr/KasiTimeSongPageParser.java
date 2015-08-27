@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 /**
  * 歌詞タイム (Kasi-Time.com) 的歌词页分析器。<br>
  * 使用 {@code Jsoup} 包获取页面信息。
@@ -26,7 +28,7 @@ class KasiTimeSongPageParser extends SongPageParser {
 
     static {
         FULL_URL_PATTERN = Pattern.compile(".*?/item-(\\d+)\\.html");
-        SONG_CODE_PATTERN = Pattern.compile("\\d+");
+        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -76,7 +78,7 @@ class KasiTimeSongPageParser extends SongPageParser {
      */
     @Override
     EnumHeader header() {
-        if (header == null) {
+        if (isNull(header)) {
             header = new EnumHeader();
 
             Element title = doc.select
