@@ -7,6 +7,8 @@ import com.kumasuke.fetcher.util.UserAgent;
 
 import java.util.Scanner;
 
+import static java.util.Objects.nonNull;
+
 /**
  * UtaTen (UtaTen.com) 歌词获取示例<br>
  * 该网站可获取含有注音的歌词
@@ -31,8 +33,7 @@ public class UtaTenSample {
         // 获取含有注音的歌词
         @SuppressWarnings("deprecation")
         Lyrics lyricsWithRuby = fetcher.getLyricsWithRuby();
-        if (lyricsWithRuby != null)
-            lyricsWithRuby
-                    .forEach(System.out::println);
+        if (nonNull(lyricsWithRuby))
+            lyricsWithRuby.forEach(System.out::println);
     }
 }

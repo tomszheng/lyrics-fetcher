@@ -11,9 +11,10 @@ public class UtaNetSample {
     public static void main(String[] args) throws Exception {
         // 构造一个 FetcherBuilder 对象，用于创建 Fetcher 对象
         FetcherBuilder builder = FetcherBuilder.builder();
+        // FetcherBuilder builder = Fetcher.builder();
         Fetcher fetcher = builder
                 .site("Uta-Net.com")      // 指定站点
-                .page("171502")           // 指定歌曲地址
+                .page("171502")           // 指定歌曲地址或代码
                 .userAgent(UserAgent.IE)  // 指定 UserAgent
                 .build();                 // 构造
 
