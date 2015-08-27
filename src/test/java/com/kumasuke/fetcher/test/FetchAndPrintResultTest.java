@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * 获取和输出测试
  */
-public class FetchAndShowResultTest {
+public class FetchAndPrintResultTest {
     private static final int RETRY_TIME = 5;
 
     private static Fetcher tryToGetFetcher(String site, String page) {
@@ -18,6 +18,7 @@ public class FetchAndShowResultTest {
         int retryTime = 0;
         Fetcher fetcher = null;
 
+        // 重试多次，尽可能排除网络异常造成的测试失败
         while (!finished && retryTime < RETRY_TIME) {
             try {
                 fetcher = Fetcher.builder()
@@ -42,12 +43,9 @@ public class FetchAndShowResultTest {
 
     private static void printFetcher(Fetcher fetcher) {
         System.out.println("Source = " + fetcher.getSource());
-        fetcher.getHeader()
-                .forEach(System.out::println);
+        fetcher.getHeader().forEach(System.out::println);
         System.out.println("------------------------------------");
-
-        fetcher.getLyrics()
-                .forEach(System.out::println);
+        fetcher.getLyrics().forEach(System.out::println);
     }
 
     private static void testStart(String site, String page) {
@@ -100,6 +98,11 @@ public class FetchAndShowResultTest {
     public void kGet() {
         testStart("KGet.jp",
                 "http://www.kget.jp/lyric/171135/Good+Time+%28with+Owl+City%29_Carly+Rae+Jepsen%2C+Owl+City");
+    }
+
+    @Test
+    public void petitLyrics() {
+        testStart("PetitLyrics.com", "1034551");
     }
 
     @Test

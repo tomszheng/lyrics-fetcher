@@ -18,6 +18,7 @@ public class AutoMatchAndFetchTest {
         int retryTime = 0;
         Fetcher fetcher = null;
 
+        // 重试多次，尽可能排除网络异常造成的测试失败
         while (!finished && retryTime < RETRY_TIME) {
             try {
                 fetcher = Fetcher.builder()
@@ -87,6 +88,11 @@ public class AutoMatchAndFetchTest {
     public void kGet() {
         testStart("http://www.kget.jp/lyric/154428/%E7%B5%82%E3%82%8F%E3%82%8A%E3%81%AE%E4%B8%96%E7%95%8C%E3%81%8B" +
                 "%E3%82%89_%E9%BA%BB%E6%9E%9D%E5%87%86%C3%97%E3%82%84%E3%81%AA%E3%81%8E%E3%81%AA%E3%81%8E");
+    }
+
+    @Test
+    public void petitLyrics() {
+        testStart("http://petitlyrics.com/lyrics/1153098");
     }
 
     @Test
