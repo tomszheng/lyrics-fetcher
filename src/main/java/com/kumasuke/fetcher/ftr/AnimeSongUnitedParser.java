@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
+import com.kumasuke.fetcher.Lyrics;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -78,7 +80,7 @@ class AnimeSongUnitedParser extends UnitedParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -90,10 +92,10 @@ class AnimeSongUnitedParser extends UnitedParser {
                 String[] artists = matcher.group("artist").split("\\u3001");
 
                 header.setTitle(title)
-                        .setLyricist(toSet(lyricists))
-                        .setComposer(toSet(composers))
-                        .setArranger(toSet(arrangers))
-                        .setArtist(toSet(artists));
+                        .setLyricist(toStringSet(lyricists))
+                        .setComposer(toStringSet(composers))
+                        .setArranger(toStringSet(arrangers))
+                        .setArtist(toStringSet(artists));
             }
         }
 
@@ -106,14 +108,14 @@ class AnimeSongUnitedParser extends UnitedParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             if (matcher.matches()) {
                 String[] lyricsText = matcher.group("lyrics").split("\\n");
-                addTo(lyrics, lyricsText);
-            }
+
+                lyrics = toLyrics(lyricsText);
+            } else
+                throw new AssertionError("The regex matching lyrics ran across some problem.");
         }
 
         return lyrics;

@@ -1,13 +1,18 @@
 package com.kumasuke.fetcher.ftr;
 
-import com.kumasuke.fetcher.util.Tools;
 import org.jsoup.Jsoup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
+import static com.kumasuke.fetcher.util.Tools.toList;
+import static com.kumasuke.fetcher.util.Tools.toSet;
 
 /**
  * 通用分析器，提供公用常量与方法。
@@ -36,62 +41,68 @@ abstract class Parser {
     }
 
     /**
-     * 将一个或多个对象转换为一个 {@code Set} 对象, 同时去除字符串两端空格。
+     * 将一个或多个 {@code String} 对象转换为一个 {@code Set} 对象，同时去除字符串两端空格。<br>
+     * 效果等同于调用 {@code Tools.toSet(String::trim, args)}，使用次数最多，作为简化。
      *
      * @param args 需要转换的 {@code String} 对象
      * @return 装有传入的 {@code String} 对象的 {@code Set} 对象
      */
-    static Set<String> toSet(String... args) {
-        return Tools.toSet(String::trim, args);
+    static Set<String> toStringSet(String... args) {
+        return toSet(String::trim, args);
     }
 
     /**
-     * 将一个或多个 {@code String} 对象转换为一个 {@code Set} 对象。<br>
-     * 使用给定的截取器截取字符串。
+     * 将正则表达式 {@code Matcher} 对象中匹配的所有文本装入一个 {@code ListLyrics} 容器中。
      *
-     * @param trimmer 字符串截取器
-     * @param args    需要转换的 {@code String} 对象
-     * @return 装有传入的 {@code String} 对象的 {@code Set} 对象
+     * @param matcher 正则表达式 {@code Matcher} 对象
+     * @return 存放歌词文本的{@code ListLyrics} 容器
      */
-    static Set<String> toSet(Function<String, String> trimmer, String... args) {
-        return Tools.toSet(trimmer, args);
-    }
+    static ListLyrics toLyrics(Matcher matcher) {
+        List<String> result = new ArrayList<>();
 
-    /**
-     * 将一行或多行歌词装入 {@code ListLyrics} 歌词容器中。
-     *
-     * @param dest {@code ListLyrics} 歌词容器
-     * @param args 歌词文本
-     */
-    static void addTo(ListLyrics dest, String... args) {
-        Stream.of(args)
-                .map(String::trim)
-                .forEach(dest::addLine);
-    }
-
-    /**
-     * 使用给定方法修饰一行或多行歌词并将其装入 {@code ListLyrics} 歌词容器中。
-     *
-     * @param dest   {@code ListLyrics} 歌词容器
-     * @param mapper 修饰方法
-     * @param args   歌词文本
-     */
-    static void addTo(ListLyrics dest, Function<String, String> mapper, String... args) {
-        Stream.of(args)
-                .map(String::trim)
-                .map(mapper)
-                .forEach(dest::addLine);
-    }
-
-    /**
-     * 将一行或多行歌词装入 {@code ListLyrics} 歌词容器中。
-     *
-     * @param dest    {@code ListLyrics} 歌词容器
-     * @param matcher 匹配歌词文本的 {code Matcher}
-     */
-    static void addTo(ListLyrics dest, Matcher matcher) {
         while (matcher.find())
-            dest.addLine(matcher.group(1).trim());
+            result.add(matcher.group(1).trim());
+
+        return new ListLyrics(result);
+    }
+
+    /**
+     * 将给定的一条或多条歌词文本装入 {@code ListLyrics} 歌词文本容器并返回。
+     *
+     * @param args 一条或多条歌词文本
+     * @return {@code ListLyrics} 歌词文本容器
+     */
+    static ListLyrics toLyrics(String... args) {
+        return new ListLyrics(toList(String::trim, args));
+    }
+
+    /**
+     * 使用给定映射将一条或多条给定参数映射为 {@code String}，装入 {@code ListLyrics} 歌词文本容器并返回。
+     *
+     * @param mapper 指定映射
+     * @param args   指定参数
+     * @param <T>    指定参数类型
+     * @return {@code ListLyrics} 歌词文本容器
+     */
+    @SafeVarargs
+    static <T> ListLyrics toLyrics(Function<T, String> mapper, T... args) {
+        return new ListLyrics(toList(e -> mapper.apply(e).trim(), args));
+    }
+
+    /**
+     * 使用给定映射将给定集合类内的内容映射为 {@code String}，装入 {@code ListLyrics} 歌词文本容器并返回。
+     *
+     * @param mapper     指定映射
+     * @param collection 指定集合类
+     * @param <T>        指定集合类内容物的类型
+     * @return {@code ListLyrics} 歌词文本容器
+     */
+    static <T> ListLyrics toLyrics(Function<T, String> mapper, Collection<T> collection) {
+        List<String> data = collection.stream()
+                .map(e -> mapper.apply(e).trim())
+                .collect(Collectors.toList());
+
+        return new ListLyrics(data);
     }
 
     /**

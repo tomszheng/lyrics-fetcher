@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -90,7 +91,7 @@ class KashiNaviSongPageParser extends SongPageParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -99,7 +100,7 @@ class KashiNaviSongPageParser extends SongPageParser {
             String title = titleAndArtist.get(0).text().trim();
             String[] artists = titleAndArtist.get(2).text().split("\\u30fb");
             header.setTitle(title)
-                    .setArtist(toSet(artists));
+                    .setArtist(toStringSet(artists));
 
             String lyricistAndComposer = doc.select("table[cellpadding=2] table[cellspacing=0]")
                     .first().select("td")
@@ -110,8 +111,8 @@ class KashiNaviSongPageParser extends SongPageParser {
                 String[] lyricists = matcher.group(1).split("\\u30fb");
                 String[] composers = matcher.group(2).split("\\u30fb");
 
-                header.setLyricist(toSet(lyricists))
-                        .setComposer(toSet(composers));
+                header.setLyricist(toStringSet(lyricists))
+                        .setComposer(toStringSet(composers));
             }
         }
 

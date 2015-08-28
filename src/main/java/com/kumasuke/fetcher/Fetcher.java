@@ -40,7 +40,7 @@ public interface Fetcher {
     Lyrics getLyrics();
 
     /**
-     * 获取含有注音歌词文本，按行存放在 {@code Lyrics} 对象中，如果存在空行则该行对应字符串为空。<br>
+     * 获取含有注音的歌词文本，按行存放在 {@code Lyrics} 对象中，如果存在空行则该行对应字符串为空。<br>
      * 只有部分站点支持获取含注音的歌词文本，当站点不支持时将会返回 {@code null} 值。
      *
      * @return 装有歌词文本的 {@code Lyrics} 对象或 {@code null} 值

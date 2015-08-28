@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -79,7 +80,7 @@ class UtaNetSongPageParser extends SongPageParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -95,9 +96,9 @@ class UtaNetSongPageParser extends SongPageParser {
                 String[] lyricists = matcher.group(2).split("\\u30fb");
                 String[] composers = matcher.group(3).split("\\u30fb");
 
-                header.setArtist(toSet(artists))
-                        .setLyricist(toSet(lyricists))
-                        .setComposer(toSet(composers));
+                header.setArtist(toStringSet(artists))
+                        .setLyricist(toStringSet(lyricists))
+                        .setComposer(toStringSet(composers));
             }
         }
 

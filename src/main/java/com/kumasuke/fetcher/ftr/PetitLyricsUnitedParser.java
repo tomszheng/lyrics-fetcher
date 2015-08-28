@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
+import com.kumasuke.fetcher.Lyrics;
 import com.kumasuke.fetcher.util.URLReader;
 
 import java.io.IOException;
@@ -81,7 +83,7 @@ class PetitLyricsUnitedParser extends UnitedParser {
     }
 
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -105,12 +107,12 @@ class PetitLyricsUnitedParser extends UnitedParser {
 
                                 if (tmp.length > 1) {
                                     s = tmp[0];
-                                    header.setArranger(toSet(tmp[1].split("[&\\uff06]")));
+                                    header.setArranger(toStringSet(tmp[1].split("[&\\uff06]")));
                                 }
                             }
                             String[] p = s.split("\\uff1a");
 
-                            return p(p[0], toSet(p[1].split("[&/,]")));
+                            return p(p[0], toStringSet(p[1].split("[&/,]")));
                         }).collect(Collectors.toMap(P::getKey, P::getValue));
 
                 Set<String> artists = allArtists.get("\u30a2\u30fc\u30c6\u30a3\u30b9\u30c8");
@@ -130,15 +132,16 @@ class PetitLyricsUnitedParser extends UnitedParser {
     }
 
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             Matcher lyricsTextMatcher = LYRICS_PATTERN.matcher(doc);
+
             if (lyricsTextMatcher.find()) {
                 String[] lyricsText = lyricsTextMatcher.group(1).split("\\n");
-                addTo(lyrics, Parser::parseHtml, lyricsText);
-            }
+
+                lyrics = toLyrics(Parser::parseHtml, lyricsText);
+            } else
+                throw new AssertionError("The regex matching lyrics ran across some problem.");
         }
 
         return lyrics;

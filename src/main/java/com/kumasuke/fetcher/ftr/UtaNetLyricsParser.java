@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Lyrics;
 import com.sun.org.apache.xerces.internal.impl.Constants;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -49,17 +50,13 @@ class UtaNetLyricsParser extends LyricsParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
-            // 根据 dom4j 文档可以安全转换
+            // 根据 dom4j API 文档可以安全转换
             @SuppressWarnings("unchecked")
-            List<Element> lrc = (List<Element>) root.elements("text");
-            lrc.stream()
-                    .map(Element::getText)
-                    .map(String::trim)
-                    .forEach(lyrics::addLine);
+            List<Element> lyricsList = (List<Element>) root.elements("text");
+
+            lyrics = toLyrics(Element::getText, lyricsList);
         }
 
         return lyrics;

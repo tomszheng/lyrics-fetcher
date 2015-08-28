@@ -1,6 +1,7 @@
 package com.kumasuke.fetcher.util;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -59,6 +60,12 @@ public class Tools {
         return isNull(charSequence) || charSequence.length() == 0;
     }
 
+/*    @SafeVarargs
+    public static <T> Set<T> toSet(T... args) {
+        return Stream.of(args)
+                .collect(Collectors.toSet());
+    }*/
+
     /**
      * 将一个或多个对象转换为一个 {@code Set} 对象，同时使用给定的映射转换对象。
      *
@@ -100,6 +107,28 @@ public class Tools {
     public static <K, V> Map<K, V> toMap(P<K, V>... args) {
         return Stream.of(args)
                 .collect(Collectors.toMap(P::getKey, P::getValue));
+    }
+
+/*    @SafeVarargs
+    public static <T> List<T> toList(T... args) {
+        return Stream.of(args)
+                .collect(Collectors.toList());
+    }*/
+
+    /**
+     * 将一个或多个对象转换为一个 {@code List} 对象，同时使用给定的映射转换对象。
+     *
+     * @param mapper 指定映射
+     * @param args   需要转换的对象
+     * @param <T>    输入参数类型
+     * @param <R>    返回集合内部值类型
+     * @return 装有映射后的对象的 {@code List} 对象
+     */
+    @SafeVarargs
+    public static <T, R> List<R> toList(Function<T, R> mapper, T... args) {
+        return Stream.of(args)
+                .map(mapper)
+                .collect(Collectors.toList());
     }
 
     /**

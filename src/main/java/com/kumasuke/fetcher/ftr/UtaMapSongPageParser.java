@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.kumasuke.fetcher.util.Tools.toSet;
 import static java.util.Objects.isNull;
 
 /**
@@ -74,7 +76,7 @@ class UtaMapSongPageParser extends SongPageParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 

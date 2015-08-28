@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
+import com.kumasuke.fetcher.Lyrics;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -75,7 +77,7 @@ class KGetUnitedParser extends UnitedParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -91,9 +93,9 @@ class KGetUnitedParser extends UnitedParser {
             String[] composers = composerElement.text().split(", ");
 
             header.setTitle(title)
-                    .setArtist(toSet(artists))
-                    .setLyricist(toSet(lyricists))
-                    .setComposer(toSet(composers));
+                    .setArtist(toStringSet(artists))
+                    .setLyricist(toStringSet(lyricists))
+                    .setComposer(toStringSet(composers));
         }
 
         return header;
@@ -105,12 +107,12 @@ class KGetUnitedParser extends UnitedParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             Element lrcBody = doc.select("#lyric-trunk").first();
-            addTo(lyrics, Parser::parseHtml, lrcBody.html().split("<br(?: /)?>"));
+            String[] lyricsText = lrcBody.html().split("<br(?: /)?>");
+
+            lyrics = toLyrics(Parser::parseHtml, lyricsText);
         }
 
         return lyrics;

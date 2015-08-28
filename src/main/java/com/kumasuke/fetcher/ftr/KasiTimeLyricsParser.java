@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Lyrics;
 import com.kumasuke.fetcher.util.URLReader;
 
 import java.io.IOException;
@@ -35,14 +36,13 @@ class KasiTimeLyricsParser extends LyricsParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             int begin = js.indexOf("write('") + 7;
             int end = js.lastIndexOf("');");
             String[] lyricsText = js.substring(begin, end).split("<br(?: /)?>");
-            addTo(lyrics, lyricsText);
+
+            lyrics = toLyrics(lyricsText);
         }
 
         return lyrics;

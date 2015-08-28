@@ -2,7 +2,6 @@ package com.kumasuke.fetcher.ftr;
 
 import com.kumasuke.fetcher.Lyrics;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -17,17 +16,8 @@ class ListLyrics implements Lyrics {
     /**
      * 构造一个 {@code ListLyrics} 对象。
      */
-    ListLyrics() {
-        data = new ArrayList<>();
-    }
-
-    /**
-     * 添加一行歌词文本。
-     *
-     * @param text 该行歌词文本
-     */
-    void addLine(String text) {
-        data.add(text);
+    ListLyrics(List<String> data) {
+        this.data = data;
     }
 
     /**

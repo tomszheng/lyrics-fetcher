@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -77,7 +78,7 @@ class KasiTimeSongPageParser extends SongPageParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -99,6 +100,7 @@ class KasiTimeSongPageParser extends SongPageParser {
                     .setLyricist(allArtists.get(1))
                     .setComposer(allArtists.get(2));
 
+            // 不一定存在编曲信息
             if (allArtists.size() == 4)
                 header.setArranger(allArtists.get(3));
         }

@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
+import com.kumasuke.fetcher.Lyrics;
 import com.kumasuke.fetcher.util.URLReader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -93,14 +95,19 @@ class JoySoundUnitedParser extends UnitedParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
-            header.setTitle(((String) json.get("songName")).trim())
-                    .setArtist(toSet(((String) json.get("artistName")).split("\\uff0c")))
-                    .setLyricist(toSet(((String) json.get("lyricist")).split("\\uff0c")))
-                    .setComposer(toSet(((String) json.get("composer")).split("\\uff0c")));
+            String title = ((String) json.get("songName")).trim();
+            String[] artists = ((String) json.get("artistName")).split("\\uff0c");
+            String[] lyricists = ((String) json.get("lyricist")).split("\\uff0c");
+            String[] composers = ((String) json.get("composer")).split("\\uff0c");
+
+            header.setTitle(title)
+                    .setArtist(toStringSet(artists))
+                    .setLyricist(toStringSet(lyricists))
+                    .setComposer(toStringSet(composers));
         }
 
         return header;
@@ -112,15 +119,14 @@ class JoySoundUnitedParser extends UnitedParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             JSONArray lrcArray = (JSONArray) json.get("lyricList");
             JSONObject lrcObj = (JSONObject) lrcArray.get(0);
             String lrcAll = (String) lrcObj.get("lyric");
             String[] lyricsText = lrcAll.split("\\n");
-            addTo(lyrics, lyricsText);
+
+            lyrics = toLyrics(lyricsText);
         }
 
         return lyrics;

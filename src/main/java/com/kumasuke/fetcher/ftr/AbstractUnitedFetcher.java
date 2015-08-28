@@ -9,10 +9,10 @@ import static java.util.Objects.requireNonNull;
 /**
  * 用于歌曲基本信息与歌词文本一同获取的站点的歌词获取器。
  *
- * @param <T> {@code UnitedParser} 对象，用于获取歌词基本信息和歌词文本
+ * @param <U> {@code UnitedParser} 对象，用于获取歌词基本信息和歌词文本
  */
-abstract class AbstractUnitedFetcher<T extends UnitedParser> implements Fetcher {
-    T parser;
+abstract class AbstractUnitedFetcher<U extends UnitedParser> implements Fetcher {
+    U parser;
 
     /**
      * 构造一个 {@code AbstractUnitedFetcher} 对象，用于获取对应网站歌词相关信息。<br>

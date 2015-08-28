@@ -1,5 +1,7 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Header;
+import com.kumasuke.fetcher.Lyrics;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -77,7 +79,7 @@ class UtaTenUnitedParser extends UnitedParser {
      * @return 装有歌曲信息的 {@code Header} 容器
      */
     @Override
-    EnumHeader header() {
+    Header header() {
         if (isNull(header)) {
             header = new EnumHeader();
 
@@ -96,9 +98,9 @@ class UtaTenUnitedParser extends UnitedParser {
             String[] lyricists = lyricistAndComposer.get(0).text().split(",");
             String[] composers = lyricistAndComposer.get(1).text().split(",");
 
-            header.setArtist(toSet(artists))
-                    .setLyricist(toSet(lyricists))
-                    .setComposer(toSet(composers));
+            header.setArtist(toStringSet(artists))
+                    .setLyricist(toStringSet(lyricists))
+                    .setComposer(toStringSet(composers));
         }
 
         return header;
@@ -111,14 +113,13 @@ class UtaTenUnitedParser extends UnitedParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
             String[] lrcWithoutRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1").split("<br(?: /)?>");
-            addTo(lyrics, Parser::parseHtml, lrcWithoutRubyText);
+
+            lyrics = toLyrics(Parser::parseHtml, lrcWithoutRubyText);
         }
 
         return lyrics;
@@ -130,14 +131,13 @@ class UtaTenUnitedParser extends UnitedParser {
      *
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
-    ListLyrics lyricsWithRuby() {
+    Lyrics lyricsWithRuby() {
         if (isNull(lyricsWithRuby)) {
-            lyricsWithRuby = new ListLyrics();
-
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
             String[] lrcWithRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1($2)").split("<br(?: /)?>");
-            addTo(lyricsWithRuby, Parser::parseHtml, lrcWithRubyText);
+
+            lyricsWithRuby = toLyrics(Parser::parseHtml, lrcWithRubyText);
         }
 
         return lyricsWithRuby;

@@ -1,5 +1,6 @@
 package com.kumasuke.fetcher.ftr;
 
+import com.kumasuke.fetcher.Lyrics;
 import com.kumasuke.fetcher.util.URLReader;
 
 import java.io.IOException;
@@ -38,13 +39,12 @@ class KashiNaviLyricsParser extends LyricsParser {
      * @return 装有歌词文本的 {@code Lyrics} 容器
      */
     @Override
-    ListLyrics lyrics() {
+    Lyrics lyrics() {
         if (isNull(lyrics)) {
-            lyrics = new ListLyrics();
-
             int begin = doc.indexOf("\n") + 1;
             String[] lyricsText = doc.substring(begin).split("\\n");
-            addTo(lyrics, lyricsText);
+
+            lyrics = toLyrics(lyricsText);
         }
 
         return lyrics;
