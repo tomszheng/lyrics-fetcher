@@ -35,12 +35,18 @@ public class BatchFetcherSample {
         parseCmdArgs(args);
         checkOptions(FILE_INPUT, DIRECTORY_OUTPUT);
 
+        // 记录下载开始时间
+        long startTime = System.nanoTime();
+
         // 输出下载的歌词文件
         List<String> pages = loadPages();
         outputFiles(pages);
+        // 记录下载结束时间并计算经过的时间
+        long endTime = System.nanoTime();
+        long elapsedTime = endTime - startTime;
 
-        // 下载完成，显示提示
-        System.out.println("(100.00%) 歌词下载完成！");
+        // 下载完成，显示提示和用时
+        System.out.printf("歌词下载完成，用时 %.0f 秒！%n", elapsedTime / 1e9);
     }
 
     private static void outputFiles(List<String> pages) {
@@ -97,21 +103,23 @@ public class BatchFetcherSample {
 
                     // 下载完成，结束循环
                     finished = true;
-                } catch (IOException e) {
-                    // 连接超时，进行重试
-                    if (e.getMessage().contains("timed out")) {
-                        // 超出重试次数，显示错误
-                        if (retryTime++ >= RETRY_TIME_BOUND)
-                            System.err.printf("网络连接错误，第 %d 首下载失败！%n", i + 1);
-                    } else {
-                        // 无法处理的异常，输出异常信息并结束循环
-                        finished = true;
-                        System.err.printf("第 %d 首下载失败！%n", i + 1);
-                        e.printStackTrace();
-                    }
                 } catch (IllegalArgumentException e) {
                     System.err.println("输入文件中的地址有误。无法解析，请检查！");
                     e.printStackTrace();
+                    System.exit(1);
+                } catch (Exception e) {
+                    // 当处于连接超时或页面下载不全导致的空指针异常情况时，进行重试
+                    if ((e instanceof IOException && e.getMessage().contains("timed out"))
+                            || e instanceof NullPointerException) {
+                        // 超出重试次数，显示错误
+                        if (retryTime++ >= RETRY_TIME_BOUND)
+                            System.err.printf("%n网络连接错误，第 %d 首下载失败！%n", i + 1);
+                    } else {
+                        // 无法处理的异常，输出异常信息并结束循环
+                        finished = true;
+                        System.err.printf("%n第 %d 首下载失败！%n", i + 1);
+                        e.printStackTrace();
+                    }
                 } finally {
                     // 重置构造器
                     fetcherBuilder.reset();
