@@ -372,11 +372,11 @@ public class URLReader {
 
     /**
      * 读取 URL 文档内的内容至 {@code String} 对象中。<br>
-     * 如果尚未提交请求，调用该方法会自动调用{@link URLReader#submit() submit()} 以提交请求。<br>
+     * 如果尚未提交请求，调用该方法会自动调用 {@link URLReader#submit() submit()} 以提交请求。<br>
      * 调用该方法后，将无法再次调用该方法或 {@link URLReader#getReader() getReader()} 方法。
      *
      * @return 文档内容字符串
-     * @throws IOException           读取文档失败
+     * @throws IOException           提交请求失败、读取文档失败
      * @throws IllegalStateException 已调用过同类方法，无法再次调用
      */
     public String getText() throws IOException {
@@ -399,7 +399,7 @@ public class URLReader {
      * 调用该方法后，将无法再次调用该方法或 {@link URLReader#getText() getText()} 方法。
      *
      * @return {@code Reader} 对象
-     * @throws IOException           读取文档失败
+     * @throws IOException           提交请求失败、读取文档失败
      * @throws IllegalStateException 已调用过同类方法，无法再次调用
      */
     public Reader getReader() throws IOException {
