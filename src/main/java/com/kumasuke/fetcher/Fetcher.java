@@ -15,12 +15,12 @@ import java.util.stream.Stream;
 public interface Fetcher {
     /**
      * 获取一个新的 {@code FetcherBuilder} 对象<br>
-     * 仅为使用方便而存在的方法，效果等同于调用 {@link FetcherBuilder#builder()}。
+     * 仅为方便使用而存在的方法，效果等同于调用 {@link FetcherBuilder#newBuilder()}。
      *
      * @return {@code FetcherBuilder} 对象
      */
     static FetcherBuilder builder() {
-        return FetcherBuilder.builder();
+        return FetcherBuilder.newBuilder();
     }
 
     /**

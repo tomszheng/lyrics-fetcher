@@ -53,7 +53,7 @@ public class FetcherBuilder {
      *
      * @return {@code FetcherBuilder} 对象
      */
-    public static FetcherBuilder builder() {
+    public static FetcherBuilder newBuilder() {
         return new FetcherBuilder();
     }
 

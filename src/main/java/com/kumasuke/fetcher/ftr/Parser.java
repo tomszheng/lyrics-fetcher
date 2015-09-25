@@ -24,9 +24,9 @@ abstract class Parser {
     static final String JSOUP_NBSP = "\u00a0";
 
     // 用于去除两端半角 / 全角空格的正则表达式
-    static final Pattern SUPER_TRIM_PATTERN;
+    static final Pattern superTrimPattern;
     // 用于去除两端 Html 和普通空格的正则表达式
-    static final Pattern HTML_TRIM_PATTERN;
+    static final Pattern htmlTrimPattern;
 
     // 匹配纯数字歌曲代码的正则表达式
     static final Pattern NUMBER_SONG_CODE_PATTERN;
@@ -34,8 +34,8 @@ abstract class Parser {
     static final Pattern WORD_SONG_CODE_PATTERN;
 
     static {
-        SUPER_TRIM_PATTERN = Pattern.compile("[\\u3000\\s]*(.*?)[\\u3000\\s]*");
-        HTML_TRIM_PATTERN = Pattern.compile("[\\u00a0\\s]*(.*?)[\\u00a0\\s]*");
+        superTrimPattern = Pattern.compile("[\\u3000\\s]*(.*?)[\\u3000\\s]*");
+        htmlTrimPattern = Pattern.compile("[\\u00a0\\s]*(.*?)[\\u00a0\\s]*");
         NUMBER_SONG_CODE_PATTERN = Pattern.compile("\\d+");
         WORD_SONG_CODE_PATTERN = Pattern.compile("[-\\w]+");
     }
@@ -90,7 +90,21 @@ abstract class Parser {
     }
 
     /**
-     * 使用给定映射将给定集合类内的内容映射为 {@code String}，装入 {@code ListLyrics} 歌词文本容器并返回。
+     * 将装有给定集合类容器的内容装入 {@code ListLyrics} 歌词文本容器并返回。
+     *
+     * @param collection 指定集合类
+     * @return {@code ListLyrics} 歌词文本容器
+     */
+    static ListLyrics toLyrics(Collection<String> collection) {
+        List<String> data = collection.stream()
+                .map(String::trim)
+                .collect(Collectors.toList());
+
+        return new ListLyrics(data);
+    }
+
+    /**
+     * 使用给定映射将给定集合类的内容映射为 {@code String}，装入 {@code ListLyrics} 歌词文本容器并返回。
      *
      * @param mapper     指定映射
      * @param collection 指定集合类
@@ -112,7 +126,7 @@ abstract class Parser {
      * @return 截取完成的字符串
      */
     static String superTrim(String str) {
-        Matcher matcher = SUPER_TRIM_PATTERN.matcher(str);
+        Matcher matcher = superTrimPattern.matcher(str);
 
         if (matcher.matches())
             return matcher.group(1);
@@ -127,7 +141,7 @@ abstract class Parser {
      * @return 截取完成的字符串
      */
     static String htmlTrim(String str) {
-        Matcher matcher = HTML_TRIM_PATTERN.matcher(str);
+        Matcher matcher = htmlTrimPattern.matcher(str);
 
         if (matcher.matches())
             return matcher.group(1);

@@ -27,6 +27,7 @@ class UtaNetLyricsParser extends LyricsParser {
      * @param songPage {@code UtaNetSongPageParser} 对象<br>
      * @throws DocumentException XML 文档连接、解析失败
      */
+    @SuppressWarnings("unchecked")
     UtaNetLyricsParser(UtaNetSongPageParser songPage) throws DocumentException {
         SAXReader reader = new SAXReader();
 

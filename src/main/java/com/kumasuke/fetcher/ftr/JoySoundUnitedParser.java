@@ -28,13 +28,13 @@ class JoySoundUnitedParser extends UnitedParser {
     // 获取歌曲基本信息和歌词的 Json 地址
     private static final String ALL_INFO_JSON_URL = "https://mspxy.joysound.com/Common/Lyric";
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
     // 匹配歌曲代码的正则表达式
-    private static final Pattern SONG_CODE_PATTERN;
+    private static final Pattern songCodePattern;
 
     static {
-        FULL_URL_PATTERN = Pattern.compile(".*?/web/search/song/(\\d+)/?");
-        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
+        fullUrlPattern = Pattern.compile(".*?/web/search/song/(\\d+)/?");
+        songCodePattern = NUMBER_SONG_CODE_PATTERN;
     }
 
     private JSONObject json;
@@ -59,8 +59,8 @@ class JoySoundUnitedParser extends UnitedParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
-        Matcher songCode = SONG_CODE_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
+        Matcher songCode = songCodePattern.matcher(page);
 
         if (fullUrl.matches())
             this.songCode = fullUrl.group(1);

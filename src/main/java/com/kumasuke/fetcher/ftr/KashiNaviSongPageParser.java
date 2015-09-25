@@ -22,18 +22,18 @@ class KashiNaviSongPageParser extends SongPageParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://kashinavi.com";
     // 提取歌曲基本信息中作词和作曲的正则表达式
-    private static final Pattern INFO_LC_PATTERN;
+    private static final Pattern lcInfoPattern;
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
     // 匹配歌曲代码的正则表达式
-    private static final Pattern SONG_CODE_PATTERN;
+    private static final Pattern songCodePattern;
 
     static {
-        INFO_LC_PATTERN = Pattern.compile("\\u4f5c\\u8a5e\\u3000\\uff1a\\u3000(.*?) # lyricist  \n" +
+        lcInfoPattern = Pattern.compile("\\u4f5c\\u8a5e\\u3000\\uff1a\\u3000(.*?)   # lyricist  \n" +
                         "\\u4f5c\\u66f2\\u3000\\uff1a\\u3000(.*?)                   # composer  \n",
                 Pattern.COMMENTS);
-        FULL_URL_PATTERN = Pattern.compile(".*?/song_view\\.html\\?(\\d+)");
-        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
+        fullUrlPattern = Pattern.compile(".*?/song_view\\.html\\?(\\d+)");
+        songCodePattern = NUMBER_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -65,8 +65,8 @@ class KashiNaviSongPageParser extends SongPageParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
-        Matcher songCode = SONG_CODE_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
+        Matcher songCode = songCodePattern.matcher(page);
 
         if (fullUrl.matches())
             this.songCode = fullUrl.group(1);
@@ -105,7 +105,7 @@ class KashiNaviSongPageParser extends SongPageParser {
             String lyricistAndComposer = doc.select("table[cellpadding=2] table[cellspacing=0]")
                     .first().select("td")
                     .first().text();
-            Matcher matcher = INFO_LC_PATTERN.matcher(lyricistAndComposer);
+            Matcher matcher = lcInfoPattern.matcher(lyricistAndComposer);
 
             if (matcher.matches()) {
                 String[] lyricists = matcher.group(1).split("\\u30fb");

@@ -22,19 +22,19 @@ class EvestaUnitedParser extends UnitedParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://www.evesta.jp/";
     // 提取歌曲标题的正则表达式
-    private static final Pattern TITLE_PATTERN;
+    private static final Pattern titlePattern;
     // 提取歌曲基本信息的正则表达式
-    private static final Pattern INFO_PATTERN;
+    private static final Pattern infoPattern;
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
 
     static {
-        TITLE_PATTERN = Pattern.compile("(.*?)\\u6b4c\\u8a5e\\s\\u002f.*");
-        INFO_PATTERN = Pattern.compile("\\u6b4c\\uff1a(.*?)   # artist    \n" +
+        titlePattern = Pattern.compile("(.*?)\\u6b4c\\u8a5e\\s\\u002f.*");
+        infoPattern = Pattern.compile("\\u6b4c\\uff1a(.*?)    # artist    \n" +
                         "\\u4f5c\\u8a5e\\uff1a(.*?)           # lyricist  \n" +
                         "\\u4f5c\\u66f2\\uff1a(.*)            # composer  \n",
                 Pattern.COMMENTS);
-        FULL_URL_PATTERN = Pattern.compile(".*?/lyric/artists/(a\\d+)/lyrics/(l\\d+)\\.html");
+        fullUrlPattern = Pattern.compile(".*?/lyric/artists/(a\\d+)/lyrics/(l\\d+)\\.html");
     }
 
     private Document doc;
@@ -58,7 +58,7 @@ class EvestaUnitedParser extends UnitedParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
 
         if (fullUrl.matches())
             this.url = HOSTNAME + "/lyric/artists/" + fullUrl.group(1) + "/lyrics/" + fullUrl.group(2) + ".html";
@@ -86,7 +86,7 @@ class EvestaUnitedParser extends UnitedParser {
             header = new EnumHeader();
 
             Element titleElement = doc.select("#titleBand h1").first();
-            Matcher titleMatcher = TITLE_PATTERN.matcher(titleElement.text());
+            Matcher titleMatcher = titlePattern.matcher(titleElement.text());
 
             if (titleMatcher.matches()) {
                 String title = titleMatcher.group(1).trim();
@@ -94,7 +94,7 @@ class EvestaUnitedParser extends UnitedParser {
             }
 
             Element artistsElement = doc.select("#descriptionBand div.artists").first();
-            Matcher matcher = INFO_PATTERN.matcher(artistsElement.text());
+            Matcher matcher = infoPattern.matcher(artistsElement.text());
 
             if (matcher.matches()) {
                 String[] artists = matcher.group(1).split("/");

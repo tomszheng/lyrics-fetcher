@@ -20,16 +20,16 @@ class JLyricUnitedParser extends UnitedParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://j-lyric.net";
     // 提取歌曲基本信息的正则表达式
-    private static final Pattern INFO_PATTERN;
+    private static final Pattern infoPattern;
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
 
     static {
-        INFO_PATTERN = Pattern.compile("\\u6b4c\\uff1a(.*?)   # artist    \n" +
+        infoPattern = Pattern.compile("\\u6b4c\\uff1a(.*?)    # artist    \n" +
                         "\\u4f5c\\u8a5e\\uff1a(.*?)           # lyricist  \n" +
                         "\\u4f5c\\u66f2\\uff1a(.*)            # composer  \n",
                 Pattern.COMMENTS);
-        FULL_URL_PATTERN = Pattern.compile(".*?/artist/(a\\w+)/(l\\w+)\\.html");
+        fullUrlPattern = Pattern.compile(".*?/artist/(a\\w+)/(l\\w+)\\.html");
     }
 
     private Document doc;
@@ -53,7 +53,7 @@ class JLyricUnitedParser extends UnitedParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
 
         if (fullUrl.matches())
             this.url = HOSTNAME + "/artist/" + fullUrl.group(1) + "/" + fullUrl.group(2) + ".html";
@@ -86,7 +86,7 @@ class JLyricUnitedParser extends UnitedParser {
 
             Element artistsElement = doc.select("div.body table").first();
             String allArtists = artistsElement.text();
-            Matcher matcher = INFO_PATTERN.matcher(allArtists);
+            Matcher matcher = infoPattern.matcher(allArtists);
 
             if (matcher.matches()) {
                 String[] artists = matcher.group(1).split("/");

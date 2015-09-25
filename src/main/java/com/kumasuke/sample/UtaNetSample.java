@@ -10,8 +10,8 @@ import com.kumasuke.fetcher.util.UserAgent;
 public class UtaNetSample {
     public static void main(String[] args) throws Exception {
         // 构造一个 FetcherBuilder 对象，用于创建 Fetcher 对象
-        FetcherBuilder builder = FetcherBuilder.builder();
-        // FetcherBuilder builder = Fetcher.builder();
+        FetcherBuilder builder = FetcherBuilder.newBuilder();
+        // FetcherBuilder newBuilder = Fetcher.newBuilder();
         Fetcher fetcher = builder
                 .site("Uta-Net.com")      // 指定站点
                 .page("171502")           // 指定歌曲地址或代码

@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class FormatterSample {
     public static void main(String[] args) throws Exception {
-        Fetcher fetcher = FetcherBuilder.builder()
+        Fetcher fetcher = FetcherBuilder.newBuilder()
                 .site("Kasi-Time.com")
                 .page("73631")
                 .userAgent(UserAgent.getUserAgent())

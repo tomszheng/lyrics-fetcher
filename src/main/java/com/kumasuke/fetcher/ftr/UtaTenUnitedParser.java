@@ -21,16 +21,16 @@ class UtaTenUnitedParser extends UnitedParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://utaten.com";
     // 提取歌曲标题的正则表达式
-    private static final Pattern TITLE_PATTERN;
+    private static final Pattern titlePattern;
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
     // 提取假名注音的正则表达式
-    private static final Pattern RUBY_PATTERN;
+    private static final Pattern rubyPattern;
 
     static {
-        TITLE_PATTERN = Pattern.compile(".*?\\u300c(.*?)\\u300d.*", Pattern.DOTALL);
-        FULL_URL_PATTERN = Pattern.compile(".*?/lyric/([^/]+)/([^/]+)/?");
-        RUBY_PATTERN = Pattern.compile("<span class=\"ruby\"><span class=\"rb\">(.*?)</span>" +
+        titlePattern = Pattern.compile(".*?\\u300c(.*?)\\u300d.*", Pattern.DOTALL);
+        fullUrlPattern = Pattern.compile(".*?/lyric/([^/]+)/([^/]+)/?");
+        rubyPattern = Pattern.compile("<span class=\"ruby\"><span class=\"rb\">(.*?)</span>" +
                 "<span class=\"rt\">(.*?)</span></span>");
     }
 
@@ -56,7 +56,7 @@ class UtaTenUnitedParser extends UnitedParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
 
         if (fullUrl.matches())
             this.url = HOSTNAME + "/lyric/" + fullUrl.group(1) + "/" + fullUrl.group(2) + "/";
@@ -84,7 +84,7 @@ class UtaTenUnitedParser extends UnitedParser {
             header = new EnumHeader();
 
             Element titleElement = doc.select("div.contentBox__title--lyricTitle h1").first();
-            Matcher titleMatcher = TITLE_PATTERN.matcher(titleElement.html());
+            Matcher titleMatcher = titlePattern.matcher(titleElement.html());
 
             if (titleMatcher.matches()) {
                 String title = parseHtml(titleMatcher.group(1)).trim();
@@ -117,7 +117,7 @@ class UtaTenUnitedParser extends UnitedParser {
         if (isNull(lyrics)) {
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
-            String[] lrcWithoutRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1").split("<br(?: /)?>");
+            String[] lrcWithoutRubyText = rubyPattern.matcher(srcLrc).replaceAll("$1").split("<br(?: /)?>");
 
             lyrics = toLyrics(Parser::parseHtml, lrcWithoutRubyText);
         }
@@ -135,7 +135,7 @@ class UtaTenUnitedParser extends UnitedParser {
         if (isNull(lyricsWithRuby)) {
             Element lrcBody = doc.select("div.lyricBody div.medium").first();
             String srcLrc = lrcBody.html().replaceAll("\\n", "");
-            String[] lrcWithRubyText = RUBY_PATTERN.matcher(srcLrc).replaceAll("$1($2)").split("<br(?: /)?>");
+            String[] lrcWithRubyText = rubyPattern.matcher(srcLrc).replaceAll("$1($2)").split("<br(?: /)?>");
 
             lyricsWithRuby = toLyrics(Parser::parseHtml, lrcWithRubyText);
         }

@@ -19,19 +19,19 @@ class AnimeSongUnitedParser extends UnitedParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://www.jtw.zaq.ne.jp/animesong";
     // 提取歌曲基本信息和歌词的正则表达式
-    private static final Pattern ALL_INFO_PATTERN;
+    private static final Pattern allInfoPattern;
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
 
     static {
-        ALL_INFO_PATTERN = Pattern.compile("(?<title>.*?)\\n\\s+           # title     \n" +
+        allInfoPattern = Pattern.compile("(?<title>.*?)\\n\\s+             # title     \n" +
                         "\\u4f5c\\u8a5e\\uff1a(?<lyricist>.*?)\\uff0f\\s*  # lyricist  \n" +
                         "\\u4f5c\\u66f2\\uff1a(?<composer>.*?)\\uff0f\\s*  # composer  \n" +
                         "\\u7de8\\u66f2\\uff1a(?<arranger>.*?)\\uff0f\\s*  # arranger  \n" +
                         "\\u6b4c\\uff1a(?<artist>.*?)\\n\\s+               # artist    \n" +
                         "(?<lyrics>.*)                                     # lyrics    \n",
                 Pattern.COMMENTS | Pattern.DOTALL);
-        FULL_URL_PATTERN = Pattern.compile(".*?/animesong/(\\w{1,2})/(\\w+)/(\\w+)\\.html");
+        fullUrlPattern = Pattern.compile(".*?/animesong/(\\w{1,2})/(\\w+)/(\\w+)\\.html");
     }
 
     private Matcher matcher;
@@ -55,7 +55,7 @@ class AnimeSongUnitedParser extends UnitedParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
 
         if (fullUrl.matches())
             this.url = HOSTNAME + "/" + fullUrl.group(1) + "/" + fullUrl.group(2) + "/" + fullUrl.group(3) + ".html";
@@ -71,7 +71,7 @@ class AnimeSongUnitedParser extends UnitedParser {
                 .userAgent(userAgent)
                 .get();
         String docText = doc.select("td.b pre").first().text();
-        matcher = ALL_INFO_PATTERN.matcher(docText);
+        matcher = allInfoPattern.matcher(docText);
     }
 
     /**

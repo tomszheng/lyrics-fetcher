@@ -22,23 +22,23 @@ class PetitLyricsUnitedParser extends UnitedParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://petitlyrics.com";
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
     // 匹配歌曲代码的正则表达式
-    private static final Pattern SONG_CODE_PATTERN;
+    private static final Pattern songCodePattern;
     // 提取歌曲标题的正则表达式
-    private static final Pattern TITLE_PATTERN;
+    private static final Pattern titlePattern;
     // 提取歌曲基本信息的正则表达式
-    private static final Pattern ALL_ARTISTS_PATTERN;
+    private static final Pattern allArtistsPattern;
     // 提取歌词文本的正则表达式
-    private static final Pattern LYRICS_PATTERN;
+    private static final Pattern lyricsPattern;
 
     static {
-        FULL_URL_PATTERN = Pattern.compile(".*?/lyrics/(\\d+)/?");
-        SONG_CODE_PATTERN = NUMBER_SONG_CODE_PATTERN;
-        TITLE_PATTERN = Pattern.compile("<div class=\"title-bar\">(.+?)</div");
-        ALL_ARTISTS_PATTERN = Pattern.compile("<div class=\"pure-u-1\">.*?<div align=\"left\".*?<p>(.*?)</p>",
+        fullUrlPattern = Pattern.compile(".*?/lyrics/(\\d+)/?");
+        songCodePattern = NUMBER_SONG_CODE_PATTERN;
+        titlePattern = Pattern.compile("<div class=\"title-bar\">(.+?)</div");
+        allArtistsPattern = Pattern.compile("<div class=\"pure-u-1\">.*?<div align=\"left\".*?<p>(.*?)</p>",
                 Pattern.DOTALL);
-        LYRICS_PATTERN = Pattern.compile("<canvas id=\"lyrics\".*?>([^<]+)\\n</canvas>");
+        lyricsPattern = Pattern.compile("<canvas id=\"lyrics\".*?>([^<]+)\\n</canvas>");
     }
 
     private String doc;
@@ -62,8 +62,8 @@ class PetitLyricsUnitedParser extends UnitedParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
-        Matcher songCode = SONG_CODE_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
+        Matcher songCode = songCodePattern.matcher(page);
 
         if (fullUrl.matches())
             this.songCode = fullUrl.group(1);
@@ -87,13 +87,13 @@ class PetitLyricsUnitedParser extends UnitedParser {
         if (isNull(header)) {
             header = new EnumHeader();
 
-            Matcher titleMatcher = TITLE_PATTERN.matcher(doc);
+            Matcher titleMatcher = titlePattern.matcher(doc);
             if (titleMatcher.find()) {
                 String title = parseHtml(titleMatcher.group(1)).trim();
                 header.setTitle(title);
             }
 
-            Matcher allArtistsMatcher = ALL_ARTISTS_PATTERN.matcher(doc);
+            Matcher allArtistsMatcher = allArtistsPattern.matcher(doc);
             if (allArtistsMatcher.find()) {
                 String allArtistsText = parseHtml(allArtistsMatcher.group(1));
                 String[] allArtistsArray = allArtistsText.split(JSOUP_NBSP);
@@ -134,14 +134,14 @@ class PetitLyricsUnitedParser extends UnitedParser {
     @Override
     Lyrics lyrics() {
         if (isNull(lyrics)) {
-            Matcher lyricsTextMatcher = LYRICS_PATTERN.matcher(doc);
+            Matcher lyricsTextMatcher = lyricsPattern.matcher(doc);
 
             if (lyricsTextMatcher.find()) {
                 String[] lyricsText = lyricsTextMatcher.group(1).split("\\n");
 
                 lyrics = toLyrics(Parser::parseHtml, lyricsText);
             } else
-                throw new AssertionError("The regex matching lyrics ran across some problem.");
+                throw new AssertionError("The regex matching lyrics ran across a problem.");
         }
 
         return lyrics;

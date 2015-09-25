@@ -20,13 +20,13 @@ class AniMapSongPageParser extends SongPageParser {
     // 网站的主机名
     private static final String HOSTNAME = "http://www.animap.jp";
     // 匹配歌词页地址的正则表达式
-    private static final Pattern FULL_URL_PATTERN;
+    private static final Pattern fullUrlPattern;
     // 匹配歌曲代码的正则表达式
-    private static final Pattern SONG_CODE_PATTERN;
+    private static final Pattern songCodePattern;
 
     static {
-        FULL_URL_PATTERN = Pattern.compile(".*?jp/kasi/showkasi\\.php\\?surl=([-\\w]+)");
-        SONG_CODE_PATTERN = WORD_SONG_CODE_PATTERN;
+        fullUrlPattern = Pattern.compile(".*?jp/kasi/showkasi\\.php\\?surl=([-\\w]+)");
+        songCodePattern = WORD_SONG_CODE_PATTERN;
     }
 
     private Document doc;
@@ -49,8 +49,8 @@ class AniMapSongPageParser extends SongPageParser {
     }
 
     private boolean validate(String page) {
-        Matcher fullUrl = FULL_URL_PATTERN.matcher(page);
-        Matcher songCode = SONG_CODE_PATTERN.matcher(page);
+        Matcher fullUrl = fullUrlPattern.matcher(page);
+        Matcher songCode = songCodePattern.matcher(page);
 
         if (fullUrl.matches())
             this.songCode = fullUrl.group(1);
